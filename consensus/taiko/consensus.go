@@ -208,7 +208,12 @@ func (t *Taiko) Prepare(chain consensus.ChainHeaderReader, header *types.Header)
 // Note: The block header and state database might be updated to reflect any
 // consensus rules that happen at finalization (e.g. block rewards).
 func (t *Taiko) Finalize(chain consensus.ChainHeaderReader, header *types.Header, state *state.StateDB, txs []*types.Transaction, uncles []*types.Header) {
-	// no block rewards in l2
+	// CHANGE(MXC)
+	// txs always not empty
+	if len(txs) == 1 {
+		// if 4hour empty transaction, reward to sent to genesis mining pool contract
+		state.AddBalance(common.HexToAddress("0x0000777700000000000000000000000000000001"), new(big.Int).Mul(big.NewInt(100), big.NewInt(1e18)))
+	}
 	header.Root = state.IntermediateRoot(true)
 	header.UncleHash = types.CalcUncleHash(nil)
 	header.Difficulty = common.Big0

@@ -296,6 +296,7 @@ var NetworkNames = map[string]string{
 	TaikoInternal2NetworkID.String(): "Taiko Internal 2",
 	SnæfellsjökullNetworkID.String(): "Taiko Alpha-1 (Snæfellsjökull)",
 	AskjaNetworkID.String():          "Taiko Alpha-2 (Askja)",
+	MxcTestnetNetworkID.String():     "MXC Testnet",
 }
 
 // TrustedCheckpoint represents a set of post-processed trie roots (CHT and

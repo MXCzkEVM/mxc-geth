@@ -18,3 +18,6 @@ var SnæfellsjökullGenesisAllocJSON []byte
 
 //go:embed askja.json
 var AskjaGenesisAllocJSON []byte
+
+//go:embed mxc-testnet.json
+var MxcTestnetGenesisAllocJSON []byte

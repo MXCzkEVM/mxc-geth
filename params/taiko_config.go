@@ -13,6 +13,7 @@ var (
 	TaikoInternal2NetworkID = big.NewInt(167002)
 	SnæfellsjökullNetworkID = big.NewInt(167003)
 	AskjaNetworkID          = big.NewInt(167004)
+	MxcTestnetNetworkID     = big.NewInt(5167003)
 )
 
 var TaikoChainConfig = &ChainConfig{
