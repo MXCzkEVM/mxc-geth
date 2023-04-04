@@ -231,8 +231,8 @@ func (api *ConsensusAPI) ForkchoiceUpdatedV1(update beacon.ForkchoiceStateV1, pa
 		}
 	}
 
-	// CHANGE(taiko): check whether --taiko flag is set.
-	isTaiko := api.eth.BlockChain().Config().Taiko
+	// CHANGE(MXC): check whether --mxc flag is set.
+	isMXC := api.eth.BlockChain().Config().MXC
 
 	if rawdb.ReadCanonicalHash(api.eth.ChainDb(), block.NumberU64()) != update.HeadBlockHash {
 		// Block is not canonical, set head.
@@ -243,7 +243,7 @@ func (api *ConsensusAPI) ForkchoiceUpdatedV1(update beacon.ForkchoiceStateV1, pa
 		// If the specified head matches with our local head, do nothing and keep
 		// generating the payload. It's a special corner case that a few slots are
 		// missing and we are requested to generate the payload in slot.
-	} else if !isTaiko { // CHANGE(taiko): reorg is allowed in L2.
+	} else if !isMXC { // CHANGE(MXC): reorg is allowed in L2.
 		// If the head block is already in our canonical chain, the beacon client is
 		// probably resyncing. Ignore the update.
 		log.Info("Ignoring beacon update to old head", "number", block.NumberU64(), "hash", update.HeadBlockHash, "age", common.PrettyAge(time.Unix(int64(block.Time()), 0)), "have", api.eth.BlockChain().CurrentBlock().NumberU64())
@@ -287,8 +287,8 @@ func (api *ConsensusAPI) ForkchoiceUpdatedV1(update beacon.ForkchoiceStateV1, pa
 	// sealed by the beacon client. The payload will be requested later, and we
 	// might replace it arbitrarily many times in between.
 	if payloadAttributes != nil {
-		// CHANGE(taiko): create a L2 block by Taiko protocol.
-		if isTaiko {
+		// CHANGE(MXC): create a L2 block by MXC protocol.
+		if isMXC {
 			// No need to check payloadAttribute here, because all its fields are
 			// marked as required.
 			block, err := api.eth.Miner().SealBlockWith(update.HeadBlockHash, payloadAttributes.Timestamp, payloadAttributes.BlockMetadata)
@@ -378,12 +378,12 @@ func (api *ConsensusAPI) GetPayloadV1(payloadID beacon.PayloadID) (*beacon.Execu
 // NewPayloadV1 creates an Eth1 block, inserts it in the chain, and returns the status of the chain.
 func (api *ConsensusAPI) NewPayloadV1(params beacon.ExecutableDataV1) (beacon.PayloadStatusV1, error) {
 	log.Trace("Engine API request received", "method", "ExecutePayload", "number", params.Number, "hash", params.BlockHash)
-	// CHANGE(taiko): allow passing the executable data with txHash instead of all transactions.
+	// CHANGE(MXC): allow passing the executable data with txHash instead of all transactions.
 	var (
 		block *types.Block
 		err   error
 	)
-	if api.eth.BlockChain().Config().Taiko && params.Transactions == nil {
+	if api.eth.BlockChain().Config().MXC && params.Transactions == nil {
 		block = types.NewBlockWithHeader(&types.Header{
 			ParentHash:  params.ParentHash,
 			UncleHash:   types.EmptyUncleHash,
@@ -449,9 +449,9 @@ func (api *ConsensusAPI) NewPayloadV1(params beacon.ExecutableDataV1) (beacon.Pa
 		log.Error("Ignoring pre-merge parent block", "number", params.Number, "hash", params.BlockHash, "td", ptd, "ttd", ttd)
 		return beacon.INVALID_TERMINAL_BLOCK, nil
 	}
-	// CHANGE(taiko): a block that has the same timestamp as its parents is
-	// allowed in Taiko protocol.
-	if api.eth.BlockChain().Config().Taiko {
+	// CHANGE(MXC): a block that has the same timestamp as its parents is
+	// allowed in MXC protocol.
+	if api.eth.BlockChain().Config().MXC {
 		if block.Time() < parent.Time() {
 			log.Warn("Invalid timestamp", "parent", block.Time(), "block", block.Time())
 			return api.invalid(errors.New("invalid timestamp"), parent.Header()), nil

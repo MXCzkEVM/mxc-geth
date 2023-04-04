@@ -36,12 +36,12 @@ type PayloadAttributesV1 struct {
 	Random                common.Hash    `json:"prevRandao"        gencodec:"required"`
 	SuggestedFeeRecipient common.Address `json:"suggestedFeeRecipient"  gencodec:"required"`
 
-	// CHANGE(taiko): extra fields.
+	// CHANGE(MXC): extra fields.
 	BlockMetadata *BlockMetadata  `json:"blockMetadata" gencodec:"required"`
 	L1Origin      *rawdb.L1Origin `json:"l1Origin" gencodec:"required"`
 }
 
-// CHANGE(taiko): BlockMetadata represents a `BlockMetadata` struct defined in
+// CHANGE(MXC): BlockMetadata represents a `BlockMetadata` struct defined in
 // protocol's `LibData`.
 type BlockMetadata struct {
 	// Fields defined in `LibData.blockMetadata`.
@@ -51,12 +51,12 @@ type BlockMetadata struct {
 	MixHash     common.Hash    `json:"mixHash"     gencodec:"required"`
 	ExtraData   []byte         `json:"extraData"     gencodec:"required"`
 
-	// Extra fields required in go-taiko.
+	// Extra fields required in go-mxc.
 	TxList         []byte   `json:"txList"     gencodec:"required"`
 	HighestBlockID *big.Int `json:"highestBlockID"     gencodec:"required"`
 }
 
-// CHANGE(taiko): JSON type overrides for BlockMetadata.
+// CHANGE(MXC): JSON type overrides for BlockMetadata.
 type blockMetadataMarshaling struct {
 	Timestamp hexutil.Uint64
 	TxList    hexutil.Bytes
@@ -83,10 +83,10 @@ type ExecutableDataV1 struct {
 	GasUsed       uint64         `json:"gasUsed"       gencodec:"required"`
 	Timestamp     uint64         `json:"timestamp"     gencodec:"required"`
 	ExtraData     []byte         `json:"extraData"     gencodec:"required"`
-	BaseFeePerGas *big.Int       `json:"-"             gencodec:"required"` // CHANGE(taiko): disable EIP-1559 temporarily
+	BaseFeePerGas *big.Int       `json:"-"             gencodec:"required"` // CHANGE(MXC): disable EIP-1559 temporarily
 	BlockHash     common.Hash    `json:"blockHash"     gencodec:"required"`
 	Transactions  [][]byte       `json:"transactions"  gencodec:"required"`
-	TxHash        common.Hash    `json:"txHash"` // CHANGE(taiko): allow passing txHash directly instead of transactions list
+	TxHash        common.Hash    `json:"txHash"` // CHANGE(MXC): allow passing txHash directly instead of transactions list
 }
 
 // JSON type overrides for executableData.

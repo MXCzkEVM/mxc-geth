@@ -24,8 +24,8 @@ func (w *worker) sealBlockWith(
 	}
 
 	if len(txs) == 0 {
-		// A L2 block needs to have have at least one `V1TaikoL2.anchor` or
-		// `V1TaikoL2.invalidateBlock` transaction.
+		// A L2 block needs to have have at least one `V1MXCL2.anchor` or
+		// `V1MXCL2.invalidateBlock` transaction.
 		return nil, fmt.Errorf("too less transactions in the block")
 	}
 

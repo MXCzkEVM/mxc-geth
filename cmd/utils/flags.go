@@ -1862,9 +1862,9 @@ func SetEthConfig(ctx *cli.Context, stack *node.Node, cfg *ethconfig.Config) {
 	}
 	// Override any default configs for hard coded networks.
 	switch {
-	// CHANGE(taiko): when --taiko flag is set, use the Taiko genesis.
-	case ctx.IsSet(TaikoFlag.Name):
-		cfg.Genesis = core.TaikoGenesisBlock(cfg.NetworkId)
+	// CHANGE(MXC): when --mxc flag is set, use the MXC genesis.
+	case ctx.IsSet(MXCFlag.Name):
+		cfg.Genesis = core.MXCGenesisBlock(cfg.NetworkId)
 	case ctx.Bool(MainnetFlag.Name):
 		if !ctx.IsSet(NetworkIdFlag.Name) {
 			cfg.NetworkId = 1

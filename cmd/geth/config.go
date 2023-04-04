@@ -184,8 +184,8 @@ func makeFullNode(ctx *cli.Context) (*node.Node, ethapi.Backend) {
 		}
 	}
 
-	// CHANGE(TAIKO): register Taiko RPC APIs.
-	utils.RegisterTaikoAPIs(stack, &cfg.Eth, eth)
+	// CHANGE(MXC): register MXC RPC APIs.
+	utils.RegisterMXCAPIs(stack, &cfg.Eth, eth)
 
 	// Configure log filter RPC API.
 	filterSystem := utils.RegisterFilterAPI(stack, backend, &cfg.Eth)

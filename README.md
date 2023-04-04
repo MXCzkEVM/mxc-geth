@@ -1,12 +1,12 @@
-# taiko-geth
+# mxc-geth
 
-[![CI](https://github.com/taikoxyz/taiko-geth/actions/workflows/ci.yml/badge.svg)](https://github.com/taikoxyz/taiko-geth/actions/workflows/ci.yml)
+[![CI](https://github.com/MXCzkEVM/mxc-geth/actions/workflows/ci.yml/badge.svg)](https://github.com/MXCzkEVM/mxc-geth/actions/workflows/ci.yml)
 
 The codebase is based on [go-ethereum v1.10.26](https://github.com/ethereum/go-ethereum/releases/tag/v1.10.26).
 
 ## Tracing changes
 
-All source code changes by [taiko](https://taiko.xyz) team are commented with `"CHANGE(taiko): ...."`, and the filenames of all additional files have the prefix `"taiko_"` (`taiko_*.go`).
+All source code changes by [mxc](https://mxc.org) team are commented with `"CHANGE(mxc): ...."`, and the filenames of all additional files have the prefix `"mxc_"` (`mxc_*.go`).
 
 ## Go Ethereum
 

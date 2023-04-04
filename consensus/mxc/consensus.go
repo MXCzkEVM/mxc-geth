@@ -1,4 +1,4 @@
-package taiko
+package mxc
 
 import (
 	"errors"
@@ -23,28 +23,28 @@ var (
 	ErrBaseFeeNotZero = errors.New("base fee not zero")
 )
 
-// Taiko is a consensus engine used by L2 rollup.
-type Taiko struct{}
+// MXC is a consensus engine used by L2 rollup.
+type MXC struct{}
 
-var defaultTaiko = new(Taiko)
+var defaultMXC = new(MXC)
 
-func New() *Taiko {
-	return defaultTaiko
+func New() *MXC {
+	return defaultMXC
 }
 
 // check all method stubs for interface `Engine` without affect performance.
-var _ consensus.Engine = (*Taiko)(nil)
+var _ consensus.Engine = (*MXC)(nil)
 
 // Author retrieves the Ethereum address of the account that minted the given
 // block, who proposes the block (not the prover).
-func (t *Taiko) Author(header *types.Header) (common.Address, error) {
+func (t *MXC) Author(header *types.Header) (common.Address, error) {
 	return header.Coinbase, nil
 }
 
 // VerifyHeader checks whether a header conforms to the consensus rules of a
 // given engine. Verifying the seal may be done optionally here, or explicitly
 // via the VerifySeal method.
-func (t *Taiko) VerifyHeader(chain consensus.ChainHeaderReader, header *types.Header, seal bool) error {
+func (t *MXC) VerifyHeader(chain consensus.ChainHeaderReader, header *types.Header, seal bool) error {
 	// Short circuit if the header is known, or its parent not
 	number := header.Number.Uint64()
 	if chain.GetHeader(header.Hash(), number) != nil {
@@ -62,7 +62,7 @@ func (t *Taiko) VerifyHeader(chain consensus.ChainHeaderReader, header *types.He
 // concurrently. The method returns a quit channel to abort the operations and
 // a results channel to retrieve the async verifications (the order is that of
 // the input slice).
-func (t *Taiko) VerifyHeaders(chain consensus.ChainHeaderReader, headers []*types.Header, seals []bool) (chan<- struct{}, <-chan error) {
+func (t *MXC) VerifyHeaders(chain consensus.ChainHeaderReader, headers []*types.Header, seals []bool) (chan<- struct{}, <-chan error) {
 	// Spawn as many workers as allowed threads
 	workers := runtime.GOMAXPROCS(0)
 	if len(headers) < workers {
@@ -116,7 +116,7 @@ func (t *Taiko) VerifyHeaders(chain consensus.ChainHeaderReader, headers []*type
 	return abort, errorsOut
 }
 
-func (t *Taiko) verifyHeader(chain consensus.ChainHeaderReader, header, parent *types.Header, seal bool, unixNow int64) error {
+func (t *MXC) verifyHeader(chain consensus.ChainHeaderReader, header, parent *types.Header, seal bool, unixNow int64) error {
 	if header.Time > uint64(unixNow) {
 		return consensus.ErrFutureBlock
 	}
@@ -166,7 +166,7 @@ func (t *Taiko) verifyHeader(chain consensus.ChainHeaderReader, header, parent *
 	return nil
 }
 
-func (t *Taiko) verifyHeaderWorker(chain consensus.ChainHeaderReader, headers []*types.Header, seals []bool, index int, unixNow int64) error {
+func (t *MXC) verifyHeaderWorker(chain consensus.ChainHeaderReader, headers []*types.Header, seals []bool, index int, unixNow int64) error {
 	var parent *types.Header
 	if index == 0 {
 		parent = chain.GetHeader(headers[0].ParentHash, headers[0].Number.Uint64()-1)
@@ -183,7 +183,7 @@ func (t *Taiko) verifyHeaderWorker(chain consensus.ChainHeaderReader, headers []
 // rules of a given engine.
 //
 // always returning an error for any uncles as this consensus mechanism doesn't permit uncles.
-func (t *Taiko) VerifyUncles(chain consensus.ChainReader, block *types.Block) error {
+func (t *MXC) VerifyUncles(chain consensus.ChainReader, block *types.Block) error {
 	if len(block.Uncles()) > 0 {
 		return ErrUnclesNotEmpty
 	}
@@ -193,7 +193,7 @@ func (t *Taiko) VerifyUncles(chain consensus.ChainReader, block *types.Block) er
 
 // Prepare initializes the consensus fields of a block header according to the
 // rules of a particular engine. The changes are executed inline.
-func (t *Taiko) Prepare(chain consensus.ChainHeaderReader, header *types.Header) error {
+func (t *MXC) Prepare(chain consensus.ChainHeaderReader, header *types.Header) error {
 	parent := chain.GetHeader(header.ParentHash, header.Number.Uint64()-1)
 	if parent == nil {
 		return consensus.ErrUnknownAncestor
@@ -207,13 +207,18 @@ func (t *Taiko) Prepare(chain consensus.ChainHeaderReader, header *types.Header)
 //
 // Note: The block header and state database might be updated to reflect any
 // consensus rules that happen at finalization (e.g. block rewards).
-func (t *Taiko) Finalize(chain consensus.ChainHeaderReader, header *types.Header, state *state.StateDB, txs []*types.Transaction, uncles []*types.Header) {
+func (t *MXC) Finalize(chain consensus.ChainHeaderReader, header *types.Header, state *state.StateDB, txs []*types.Transaction, uncles []*types.Header) {
 	// CHANGE(MXC)
 	// txs always not empty
-	if len(txs) == 1 {
-		// if 4hour empty transaction, reward to sent to genesis mining pool contract
-		state.AddBalance(common.HexToAddress("0x0000777700000000000000000000000000000001"), new(big.Int).Mul(big.NewInt(100), big.NewInt(1e18)))
-	}
+	// extra data reward
+	//reward := big.NewInt(0).SetBytes(header.Extra)
+	//log.Info("MXC Block Reward", reward.String())
+	//if len(txs) > 1 {
+	//	state.AddBalance(header.Coinbase, reward)
+	//} else {
+	//	// if 4hour empty transaction, reward to sent to genesis mining pool contract
+	//	state.AddBalance(common.HexToAddress("0x0000777700000000000000000000000000000001"), reward)
+	//}
 	header.Root = state.IntermediateRoot(true)
 	header.UncleHash = types.CalcUncleHash(nil)
 	header.Difficulty = common.Big0
@@ -224,7 +229,7 @@ func (t *Taiko) Finalize(chain consensus.ChainHeaderReader, header *types.Header
 //
 // Note: The block header and state database might be updated to reflect any
 // consensus rules that happen at finalization (e.g. block rewards).
-func (t *Taiko) FinalizeAndAssemble(chain consensus.ChainHeaderReader, header *types.Header, state *state.StateDB, txs []*types.Transaction, uncles []*types.Header, receipts []*types.Receipt) (*types.Block, error) {
+func (t *MXC) FinalizeAndAssemble(chain consensus.ChainHeaderReader, header *types.Header, state *state.StateDB, txs []*types.Transaction, uncles []*types.Header, receipts []*types.Receipt) (*types.Block, error) {
 	// Finalize block
 	t.Finalize(chain, header, state, txs, uncles)
 	return types.NewBlock(header, txs, nil /* ignore uncles */, receipts, trie.NewStackTrie(nil)), nil
@@ -235,7 +240,7 @@ func (t *Taiko) FinalizeAndAssemble(chain consensus.ChainHeaderReader, header *t
 //
 // Note, the method returns immediately and will send the result async. More
 // than one result may also be returned depending on the consensus algorithm.
-func (t *Taiko) Seal(chain consensus.ChainHeaderReader, block *types.Block, results chan<- *types.Block, stop <-chan struct{}) error {
+func (t *MXC) Seal(chain consensus.ChainHeaderReader, block *types.Block, results chan<- *types.Block, stop <-chan struct{}) error {
 	header := block.Header()
 
 	// Sealing the genesis block is not supported
@@ -256,23 +261,23 @@ func (t *Taiko) Seal(chain consensus.ChainHeaderReader, block *types.Block, resu
 }
 
 // SealHash returns the hash of a block prior to it being sealed.
-func (t *Taiko) SealHash(header *types.Header) common.Hash {
+func (t *MXC) SealHash(header *types.Header) common.Hash {
 	// Keccak(rlp(header))
 	return header.Hash()
 }
 
 // CalcDifficulty is the difficulty adjustment algorithm. It returns the difficulty
 // that a new block should have.
-func (t *Taiko) CalcDifficulty(chain consensus.ChainHeaderReader, time uint64, parent *types.Header) *big.Int {
+func (t *MXC) CalcDifficulty(chain consensus.ChainHeaderReader, time uint64, parent *types.Header) *big.Int {
 	return common.Big0
 }
 
 // APIs returns the RPC APIs this consensus engine provides.
-func (t *Taiko) APIs(chain consensus.ChainHeaderReader) []rpc.API {
+func (t *MXC) APIs(chain consensus.ChainHeaderReader) []rpc.API {
 	return nil
 }
 
 // Close terminates any background threads maintained by the consensus engine.
-func (t *Taiko) Close() error {
+func (t *MXC) Close() error {
 	return nil
 }

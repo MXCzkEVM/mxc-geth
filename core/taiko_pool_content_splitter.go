@@ -56,7 +56,7 @@ func (pc PoolContent) ToTxsByPriceAndNonce(
 
 // PoolContentSplitter is responsible for splitting the pool content
 // which fetched from a `txpool_content` RPC call response into several smaller transactions lists
-// and make sure each splitted list satisfies the limits defined in Taiko protocol.
+// and make sure each splitted list satisfies the limits defined in MXC protocol.
 type PoolContentSplitter struct {
 	chainID                 *big.Int
 	maxTransactionsPerBlock uint64
@@ -95,7 +95,7 @@ func NewPoolContentSplitter(
 }
 
 // Split splits the given transaction pool content to make each splitted
-// transactions list satisfies the rules defined in Taiko protocol.
+// transactions list satisfies the rules defined in MXC protocol.
 func (p *PoolContentSplitter) Split(poolContent PoolContent) []types.Transactions {
 	var (
 		localTxs, remoteTxs   = poolContent.ToTxsByPriceAndNonce(p.chainID, p.locals)
@@ -109,7 +109,7 @@ func (p *PoolContentSplitter) Split(poolContent PoolContent) []types.Transaction
 }
 
 // validateTx checks whether the given transaction is valid according
-// to the rules in Taiko protocol.
+// to the rules in MXC protocol.
 func (p *PoolContentSplitter) validateTx(tx *types.Transaction) error {
 	if tx.Gas() < p.minTxGasLimit || tx.Gas() > p.blockMaxGasLimit {
 		return fmt.Errorf(

@@ -2,35 +2,23 @@ package core
 
 import (
 	"github.com/ethereum/go-ethereum/common"
-	taikoGenesis "github.com/ethereum/go-ethereum/core/taiko_genesis"
+	mxcGenesis "github.com/ethereum/go-ethereum/core/mxc_genesis"
 	"github.com/ethereum/go-ethereum/log"
 	"github.com/ethereum/go-ethereum/params"
 )
 
-// TaikoGenesisBlock returns the Taiko network genesis block configs.
-func TaikoGenesisBlock(networkID uint64) *Genesis {
-	chainConfig := params.TaikoChainConfig
+// MXCGenesisBlock returns the MXC network genesis block configs.
+func MXCGenesisBlock(networkID uint64) *Genesis {
+	chainConfig := params.MXCChainConfig
 
 	var allocJSON []byte
 	switch networkID {
-	case params.TaikoInternal1NetworkID.Uint64():
-		chainConfig.ChainID = params.TaikoInternal1NetworkID
-		allocJSON = taikoGenesis.Internal1GenesisAllocJSON
-	case params.TaikoInternal2NetworkID.Uint64():
-		chainConfig.ChainID = params.TaikoInternal2NetworkID
-		allocJSON = taikoGenesis.Internal2GenesisAllocJSON
-	case params.SnæfellsjökullNetworkID.Uint64():
-		chainConfig.ChainID = params.SnæfellsjökullNetworkID
-		allocJSON = taikoGenesis.SnæfellsjökullGenesisAllocJSON
-	case params.AskjaNetworkID.Uint64():
-		chainConfig.ChainID = params.AskjaNetworkID
-		allocJSON = taikoGenesis.AskjaGenesisAllocJSON
-	case params.MxcTestnetNetworkID.Uint64():
-		chainConfig.ChainID = params.MxcTestnetNetworkID
-		allocJSON = taikoGenesis.MxcTestnetGenesisAllocJSON
+	case params.MxcWannseeNetworkID.Uint64():
+		chainConfig.ChainID = params.MxcWannseeNetworkID
+		allocJSON = mxcGenesis.MxcWannseeGenesisAllocJSON
 	default:
-		chainConfig.ChainID = params.TaikoMainnetNetworkID
-		allocJSON = taikoGenesis.MainnetGenesisAllocJSON
+		chainConfig.ChainID = params.MXCMainnetNetworkID
+		allocJSON = mxcGenesis.MXCMainNetGenesisAllocJSON
 	}
 
 	var alloc GenesisAlloc

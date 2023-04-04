@@ -252,8 +252,8 @@ func init() {
 		metricsFlags,
 	)
 
-	// CHANGE(taiko): append Taiko flags into the original GETH flags
-	app.Flags = append(app.Flags, &utils.TaikoFlag)
+	// CHANGE(MXC): append MXC flags into the original GETH flags
+	app.Flags = append(app.Flags, &utils.MXCFlag)
 
 	app.Before = func(ctx *cli.Context) error {
 		flags.MigrateGlobalFlags(ctx)

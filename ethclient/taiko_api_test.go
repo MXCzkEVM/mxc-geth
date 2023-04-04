@@ -21,7 +21,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func newTaikoAPITestClient(t *testing.T) (*Client, []*types.Block, ethdb.Database) {
+func newMXCAPITestClient(t *testing.T) (*Client, []*types.Block, ethdb.Database) {
 	// Generate test chain.
 	blocks := generateTestChain()
 
@@ -38,9 +38,9 @@ func newTaikoAPITestClient(t *testing.T) (*Client, []*types.Block, ethdb.Databas
 
 	n.RegisterAPIs([]rpc.API{
 		{
-			Namespace: "taiko",
+			Namespace: "mxc",
 			Version:   params.VersionWithMeta,
-			Service:   eth.NewTaikoAPIBackend(ethservice),
+			Service:   eth.NewMXCAPIBackend(ethservice),
 			Public:    true,
 		},
 	})
@@ -59,7 +59,7 @@ func newTaikoAPITestClient(t *testing.T) (*Client, []*types.Block, ethdb.Databas
 }
 
 func TestHeadL1Origin(t *testing.T) {
-	ec, blocks, db := newTaikoAPITestClient(t)
+	ec, blocks, db := newMXCAPITestClient(t)
 
 	headerHash := blocks[len(blocks)-1].Hash()
 
@@ -85,7 +85,7 @@ func TestHeadL1Origin(t *testing.T) {
 }
 
 func TestL1OriginByID(t *testing.T) {
-	ec, blocks, db := newTaikoAPITestClient(t)
+	ec, blocks, db := newMXCAPITestClient(t)
 
 	headerHash := blocks[len(blocks)-1].Hash()
 	testL1Origin := &rawdb.L1Origin{
@@ -109,7 +109,7 @@ func TestL1OriginByID(t *testing.T) {
 }
 
 func TestGetThrowawayTransactionReceipts(t *testing.T) {
-	ec, blocks, _ := newTaikoAPITestClient(t)
+	ec, blocks, _ := newMXCAPITestClient(t)
 	headerHash := blocks[len(blocks)-1].Hash()
 
 	receipts, err := ec.GetThrowawayTransactionReceipts(context.Background(), headerHash)

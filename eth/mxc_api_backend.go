@@ -1,6 +1,7 @@
 package eth
 
 import (
+	"fmt"
 	"math/big"
 
 	"github.com/ethereum/go-ethereum"
@@ -12,20 +13,20 @@ import (
 	"github.com/ethereum/go-ethereum/log"
 )
 
-// TaikoAPIBackend handles l2 node related RPC calls.
-type TaikoAPIBackend struct {
+// MXCAPIBackend handles l2 node related RPC calls.
+type MXCAPIBackend struct {
 	eth *Ethereum
 }
 
-// NewTaikoAPIBackend creates a new TaikoAPIBackend instance.
-func NewTaikoAPIBackend(eth *Ethereum) *TaikoAPIBackend {
-	return &TaikoAPIBackend{
+// NewMXCAPIBackend creates a new MXCAPIBackend instance.
+func NewMXCAPIBackend(eth *Ethereum) *MXCAPIBackend {
+	return &MXCAPIBackend{
 		eth: eth,
 	}
 }
 
 // HeadL1Origin returns the latest L2 block's corresponding L1 origin.
-func (s *TaikoAPIBackend) HeadL1Origin() (*rawdb.L1Origin, error) {
+func (s *MXCAPIBackend) HeadL1Origin() (*rawdb.L1Origin, error) {
 	blockID, err := rawdb.ReadHeadL1Origin(s.eth.ChainDb())
 	if err != nil {
 		return nil, err
@@ -48,7 +49,7 @@ func (s *TaikoAPIBackend) HeadL1Origin() (*rawdb.L1Origin, error) {
 }
 
 // L1OriginByID returns the L2 block's corresponding L1 origin.
-func (s *TaikoAPIBackend) L1OriginByID(blockID *math.HexOrDecimal256) (*rawdb.L1Origin, error) {
+func (s *MXCAPIBackend) L1OriginByID(blockID *math.HexOrDecimal256) (*rawdb.L1Origin, error) {
 	l1Origin, err := rawdb.ReadL1Origin(s.eth.ChainDb(), (*big.Int)(blockID))
 	if err != nil {
 		return nil, err
@@ -63,7 +64,7 @@ func (s *TaikoAPIBackend) L1OriginByID(blockID *math.HexOrDecimal256) (*rawdb.L1
 
 // GetThrowawayTransactionReceipts returns the throwaway block's receipts
 // without checking whether the block is in the canonical chain.
-func (s *TaikoAPIBackend) GetThrowawayTransactionReceipts(hash common.Hash) (types.Receipts, error) {
+func (s *MXCAPIBackend) GetThrowawayTransactionReceipts(hash common.Hash) (types.Receipts, error) {
 	receipts := s.eth.blockchain.GetReceiptsByHash(hash)
 	if receipts == nil {
 		return nil, ethereum.NotFound
@@ -73,7 +74,7 @@ func (s *TaikoAPIBackend) GetThrowawayTransactionReceipts(hash common.Hash) (typ
 }
 
 // TxPoolContent retrieves the transaction pool content with the given upper limits.
-func (s *TaikoAPIBackend) TxPoolContent(
+func (s *MXCAPIBackend) TxPoolContent(
 	maxTransactionsPerBlock uint64,
 	blockMaxGasLimit uint64,
 	maxBytesPerTxList uint64,
@@ -110,6 +111,12 @@ func (s *TaikoAPIBackend) TxPoolContent(
 	)
 	for _, splittedTxs := range contentSplitter.Split(pending) {
 		if txsCount+splittedTxs.Len() < int(maxTransactionsPerBlock) {
+			fmt.Println("gasPrice", s.eth.gasPrice.Uint64())
+			//for _, tx := range splittedTxs {
+			//	if tx.GasPrice().Uint64() < s.eth.gasPrice.Uint64() {
+			//
+			//	}
+			//}
 			txLists = append(txLists, splittedTxs)
 			txsCount += splittedTxs.Len()
 			continue

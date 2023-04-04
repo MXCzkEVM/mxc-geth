@@ -981,8 +981,8 @@ func (w *worker) prepareWork(genParams *generateParams) (*environment, error) {
 	// to parent+1 if the mutation is allowed.
 	timestamp := genParams.timestamp
 	if parent.Time() >= timestamp {
-		// CHANGE(taiko): block.timestamp == parent.timestamp is allowed in Taiko protocol.
-		if !w.chainConfig.Taiko {
+		// CHANGE(MXC): block.timestamp == parent.timestamp is allowed in MXC protocol.
+		if !w.chainConfig.MXC {
 			if genParams.forceTime {
 				return nil, fmt.Errorf("invalid timestamp, parent %d given %d", parent.Time(), timestamp)
 			}
