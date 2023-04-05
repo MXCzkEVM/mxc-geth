@@ -1,7 +1,6 @@
 package eth
 
 import (
-	"fmt"
 	"math/big"
 
 	"github.com/ethereum/go-ethereum"
@@ -111,12 +110,12 @@ func (s *MXCAPIBackend) TxPoolContent(
 	)
 	for _, splittedTxs := range contentSplitter.Split(pending) {
 		if txsCount+splittedTxs.Len() < int(maxTransactionsPerBlock) {
-			fmt.Println("gasPrice", s.eth.gasPrice.Uint64())
-			//for _, tx := range splittedTxs {
-			//	if tx.GasPrice().Uint64() < s.eth.gasPrice.Uint64() {
-			//
-			//	}
-			//}
+			for i, tx := range splittedTxs {
+				if tx.GasPrice().Cmp(s.eth.gasPrice) < 0 {
+					splittedTxs = append(splittedTxs[:i], splittedTxs[i+1:]...)
+					log.Info("Dropping tx with low gas price", "hash", tx.Hash(), "gasPrice", tx.GasPrice(), "minGasPrice", s.eth.gasPrice)
+				}
+			}
 			txLists = append(txLists, splittedTxs)
 			txsCount += splittedTxs.Len()
 			continue
