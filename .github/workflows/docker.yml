@@ -32,7 +32,7 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: |
-            gcr.io/evmchain/mxc-geth
+            gcr.io/mxczkevm/mxc-geth
           tags: |
             type=ref,event=branch
             type=ref,event=pr
