@@ -110,11 +110,16 @@ func (s *MXCAPIBackend) TxPoolContent(
 	)
 	for _, splittedTxs := range contentSplitter.Split(pending) {
 		if txsCount+splittedTxs.Len() < int(maxTransactionsPerBlock) {
-			for i, tx := range splittedTxs {
+			ignore := false
+			for _, tx := range splittedTxs {
 				if tx.GasPrice().Cmp(s.eth.gasPrice) < 0 {
-					splittedTxs = append(splittedTxs[:i], splittedTxs[i+1:]...)
 					log.Info("Dropping tx with low gas price", "hash", tx.Hash(), "gasPrice", tx.GasPrice(), "minGasPrice", s.eth.gasPrice)
+					ignore = true
+					break
 				}
+			}
+			if ignore {
+				continue
 			}
 			txLists = append(txLists, splittedTxs)
 			txsCount += splittedTxs.Len()
