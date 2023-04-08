@@ -114,6 +114,7 @@ func (s *MXCAPIBackend) TxPoolContent(
 				if splittedTxs[i].GasPrice().Cmp(s.eth.gasPrice) < 0 {
 					log.Info("Dropping tx with low gas price", "hash", splittedTxs[i].Hash(), "gasPrice", splittedTxs[i].GasPrice(), "minGasPrice", s.eth.gasPrice)
 					splittedTxs = append(splittedTxs[:i], splittedTxs[i+1:]...)
+					i--
 				}
 			}
 			txLists = append(txLists, splittedTxs)
