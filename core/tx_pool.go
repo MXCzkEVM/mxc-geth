@@ -18,6 +18,7 @@ package core
 
 import (
 	"errors"
+	"fmt"
 	"math"
 	"math/big"
 	"sort"
@@ -653,6 +654,7 @@ func (pool *TxPool) validateTx(tx *types.Transaction, local bool) error {
 // be added to the allowlist, preventing any associated transaction from being dropped
 // out of the pool due to pricing constraints.
 func (pool *TxPool) add(tx *types.Transaction, local bool) (replaced bool, err error) {
+
 	// If the transaction is already known, discard it
 	hash := tx.Hash()
 	if pool.all.Get(hash) != nil {
@@ -663,6 +665,14 @@ func (pool *TxPool) add(tx *types.Transaction, local bool) (replaced bool, err e
 	// Make the local flag. If it's from local source or it's from the network but
 	// the sender is marked as local previously, treat it as the local transaction.
 	isLocal := local || pool.locals.containsTx(tx)
+
+	// CHANGE(MXC): check if the transaction gas price is less than the minimum gas price
+	fmt.Println("txGasPrice", tx.GasPrice().Uint64(), "pool gasprice", pool.gasPrice)
+	if tx.GasPrice().Cmp(pool.gasPrice) < 0 {
+		log.Trace("Discarding underpriced transaction", "hash", hash, "gasPrice", tx.GasPrice(), "local", isLocal)
+		underpricedTxMeter.Mark(1)
+		return false, ErrUnderpriced
+	}
 
 	// If the transaction fails basic validation, discard it
 	if err := pool.validateTx(tx, isLocal); err != nil {
