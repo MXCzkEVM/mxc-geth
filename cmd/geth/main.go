@@ -19,6 +19,7 @@ package main
 
 import (
 	"fmt"
+	"math/big"
 	"os"
 	"sort"
 	"strconv"
@@ -436,6 +437,18 @@ func startNode(ctx *cli.Context, stack *node.Node, backend ethapi.Backend, isCon
 				}
 			}
 		}()
+	}
+
+	// CHANGE(MXC)
+	gasprice := flags.GlobalBig(ctx, utils.MinerGasPriceFlag.Name)
+	if gasprice.Cmp(big.NewInt(0)) > 0 {
+		ethBackend, ok := backend.(*eth.EthAPIBackend)
+		if !ok {
+			utils.Fatalf("Ethereum service not running")
+		}
+		// Set the gas price to the limits from the CLI and start mining
+		gasprice := flags.GlobalBig(ctx, utils.MinerGasPriceFlag.Name)
+		ethBackend.TxPool().SetGasPrice(gasprice)
 	}
 
 	// Start auxiliary services if enabled
