@@ -18,7 +18,6 @@ package core
 
 import (
 	"errors"
-	"fmt"
 	"math"
 	"math/big"
 	"sort"
@@ -667,7 +666,6 @@ func (pool *TxPool) add(tx *types.Transaction, local bool) (replaced bool, err e
 	isLocal := local || pool.locals.containsTx(tx)
 
 	// CHANGE(MXC): check if the transaction gas price is less than the minimum gas price
-	fmt.Println("txGasPrice", tx.GasPrice().Uint64(), "pool gasprice", pool.gasPrice)
 	if tx.GasPrice().Cmp(pool.gasPrice) < 0 {
 		log.Trace("Discarding underpriced transaction", "hash", hash, "gasPrice", tx.GasPrice(), "local", isLocal)
 		underpricedTxMeter.Mark(1)
