@@ -76,8 +76,8 @@ func (v *BlockValidator) ValidateBody(block *types.Block) error {
 		}
 
 		var hash common.Hash
-		if v.config.Taiko {
-			hash = types.CalcWithdrawalsRootTaiko(block.Withdrawals())
+		if v.config.Mxc {
+			hash = types.CalcWithdrawalsRootMxc(block.Withdrawals())
 		} else {
 			hash = types.DeriveSha(block.Withdrawals(), trie.NewStackTrie(nil))
 		}

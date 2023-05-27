@@ -256,11 +256,11 @@ func NewBlockWithWithdrawals(header *Header, txs []*Transaction, uncles []*Heade
 	return b.WithWithdrawals(withdrawals)
 }
 
-// CHANGE(taiko): use custom withdrawals hasher
-func NewTaikoBlockWithWithdrawals(header *Header, txs []*Transaction, uncles []*Header, receipts []*Receipt, withdrawals []*Withdrawal, hasher TrieHasher) *Block {
+// CHANGE(MXC): use custom withdrawals hasher
+func NewMxcBlockWithWithdrawals(header *Header, txs []*Transaction, uncles []*Header, receipts []*Receipt, withdrawals []*Withdrawal, hasher TrieHasher) *Block {
 	b := NewBlock(header, txs, uncles, receipts, hasher)
 
-	h := CalcWithdrawalsRootTaiko(withdrawals)
+	h := CalcWithdrawalsRootMxc(withdrawals)
 	b.header.WithdrawalsHash = &h
 
 	return b.WithWithdrawals(withdrawals)
@@ -466,7 +466,7 @@ func HeaderParentHashFromRLP(header []byte) common.Hash {
 	return common.BytesToHash(parentHash)
 }
 
-// CHANGE(taiko): calc withdrawals root by hashing deposits with keccak256.
+// CHANGE(mxc): calc withdrawals root by hashing deposits with keccak256.
 // Golang equivalent to this solidity function:
 // function hashDeposits(TaikoData.EthDeposit[] memory deposits) internal pure returns (bytes32) {
 // bytes memory buffer;
@@ -477,7 +477,7 @@ func HeaderParentHashFromRLP(header []byte) common.Hash {
 //
 //	 return keccak256(buffer);
 //	 }
-func CalcWithdrawalsRootTaiko(withdrawals []*Withdrawal) common.Hash {
+func CalcWithdrawalsRootMxc(withdrawals []*Withdrawal) common.Hash {
 	// only process withdrawals/deposits of 8 minimum
 	if len(withdrawals) == 0 {
 		return EmptyCodeHash // a known keccak256 hash of the empty payload bytes.

@@ -1,4 +1,4 @@
-package taiko_test
+package mxc_test
 
 import (
 	"bytes"
@@ -8,7 +8,7 @@ import (
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/consensus"
-	"github.com/ethereum/go-ethereum/consensus/taiko"
+	"github.com/ethereum/go-ethereum/consensus/mxc"
 	"github.com/ethereum/go-ethereum/core"
 	"github.com/ethereum/go-ethereum/core/rawdb"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -27,7 +27,7 @@ var (
 
 	genesis    *core.Genesis
 	txs        []*types.Transaction
-	testEngine *taiko.Taiko
+	testEngine *mxc.Mxc
 )
 
 func init() {
@@ -35,8 +35,8 @@ func init() {
 	config.GrayGlacierBlock = nil
 	config.ArrowGlacierBlock = nil
 	config.Ethash = nil
-	config.Taiko = true
-	testEngine = taiko.New()
+	config.Mxc = true
+	testEngine = mxc.New()
 
 	genesis = &core.Genesis{
 		Config:     config,
@@ -102,8 +102,8 @@ func newTestBackend(t *testing.T) (*eth.Ethereum, []*types.Block) {
 		t.Fatalf("can't import test blocks: %v", err)
 	}
 
-	if _, ok := ethservice.Engine().(*taiko.Taiko); !ok {
-		t.Fatalf("not use taiko engine")
+	if _, ok := ethservice.Engine().(*mxc.Mxc); !ok {
+		t.Fatalf("not use mxc engine")
 	}
 
 	return ethservice, blocks
@@ -114,7 +114,7 @@ func generateTestChain() []*types.Block {
 	generate := func(i int, g *core.BlockGen) {
 		g.OffsetTime(5)
 
-		g.SetExtra([]byte("test_taiko"))
+		g.SetExtra([]byte("test_mxc"))
 		g.SetDifficulty(common.Big0)
 
 		for _, tx := range txs {

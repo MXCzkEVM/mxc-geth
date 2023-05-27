@@ -12,7 +12,7 @@ import (
 func (ec *Client) HeadL1Origin(ctx context.Context) (*rawdb.L1Origin, error) {
 	var res *rawdb.L1Origin
 
-	if err := ec.c.CallContext(ctx, &res, "taiko_headL1Origin"); err != nil {
+	if err := ec.c.CallContext(ctx, &res, "mxc_headL1Origin"); err != nil {
 		return nil, err
 	}
 
@@ -23,7 +23,7 @@ func (ec *Client) HeadL1Origin(ctx context.Context) (*rawdb.L1Origin, error) {
 func (ec *Client) L1OriginByID(ctx context.Context, blockID *big.Int) (*rawdb.L1Origin, error) {
 	var res *rawdb.L1Origin
 
-	if err := ec.c.CallContext(ctx, &res, "taiko_l1OriginByID", hexutil.EncodeBig(blockID)); err != nil {
+	if err := ec.c.CallContext(ctx, &res, "mxc_l1OriginByID", hexutil.EncodeBig(blockID)); err != nil {
 		return nil, err
 	}
 

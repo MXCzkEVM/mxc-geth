@@ -16,8 +16,8 @@ type TaikoAPIBackend struct {
 	eth *Ethereum
 }
 
-// NewTaikoAPIBackend creates a new TaikoAPIBackend instance.
-func NewTaikoAPIBackend(eth *Ethereum) *TaikoAPIBackend {
+// NewMxcAPIBackend creates a new TaikoAPIBackend instance.
+func NewMxcAPIBackend(eth *Ethereum) *TaikoAPIBackend {
 	return &TaikoAPIBackend{
 		eth: eth,
 	}

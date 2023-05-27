@@ -25,7 +25,7 @@ func l1OriginKey(blockID *big.Int) []byte {
 	return append(l1OriginPrefix, data...)
 }
 
-//go:generate go run github.com/fjl/gencodec -type L1Origin -field-override l1OriginMarshaling -out gen_taiko_l1_origin.go
+//go:generate go run github.com/fjl/gencodec -type L1Origin -field-override l1OriginMarshaling -out gen_mxc_l1_origin.go
 
 // L1Origin represents a L1Origin of a L2 block.
 type L1Origin struct {

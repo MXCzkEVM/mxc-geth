@@ -141,7 +141,7 @@ type Message struct {
 	// This field will be set to true for operations like RPC eth_call.
 	SkipAccountChecks bool
 
-	// CHANGE(taiko): Whteher the current transaction is the first transaction in a block.
+	// CHANGE(mxc): Whteher the current transaction is the first transaction in a block.
 	IsFirstTx bool
 }
 
@@ -238,7 +238,7 @@ func (st *StateTransition) buyGas() error {
 		balanceCheck = balanceCheck.Mul(balanceCheck, st.msg.GasFeeCap)
 		balanceCheck.Add(balanceCheck, st.msg.Value)
 	}
-	// CHANGE(taiko): skip balance check for TaikoL2.anchor transaction.
+	// CHANGE(mxc): skip balance check for TaikoL2.anchor transaction.
 	if st.isAnchor() {
 		balanceCheck = common.Big0
 		mgval = common.Big0
@@ -403,9 +403,10 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 	} else {
 		fee := new(big.Int).SetUint64(st.gasUsed())
 		fee.Mul(fee, effectiveTip)
+		// CHANGE(MXC): coinbase reward redirect to LPWAN
 		st.state.AddBalance(st.evm.Context.Coinbase, fee)
-		// CHANGE(taiko): basefee is not burnt, but sent to a treasury instead.
-		if st.evm.ChainConfig().Taiko && st.evm.Context.BaseFee != nil && !st.isAnchor() {
+		// CHANGE(mxc): basefee is not burnt, but sent to a treasury instead.
+		if st.evm.ChainConfig().Mxc && st.evm.Context.BaseFee != nil && !st.isAnchor() {
 			st.state.AddBalance(
 				st.evm.ChainConfig().Treasury,
 				new(big.Int).Mul(st.evm.Context.BaseFee, new(big.Int).SetUint64(st.gasUsed())),
@@ -443,7 +444,7 @@ func (st *StateTransition) gasUsed() uint64 {
 }
 
 func (st *StateTransition) isAnchor() bool {
-	return st.evm.ChainConfig().Taiko &&
+	return st.evm.ChainConfig().Mxc &&
 		st.msg.IsFirstTx &&
 		st.msg.From == common.HexToAddress("0x0000777735367b36bC9B61C50022d9D0700dB4Ec")
 }

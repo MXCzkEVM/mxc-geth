@@ -351,13 +351,9 @@ var NetworkNames = map[string]string{
 	RinkebyChainConfig.ChainID.String(): "rinkeby",
 	GoerliChainConfig.ChainID.String():  "goerli",
 	SepoliaChainConfig.ChainID.String(): "sepolia",
-	// CHANGE(taiko): add Taiko network name.
-	TaikoMainnetNetworkID.String():   "Taiko",
-	TaikoInternal1NetworkID.String(): "Taiko Internal 1",
-	TaikoInternal2NetworkID.String(): "Taiko Internal 2",
-	SnæfellsjökullNetworkID.String(): "Taiko Alpha-1 (Snæfellsjökull)",
-	AskjaNetworkID.String():          "Taiko Alpha-2 (Askja)",
-	GrimsvotnNetworkID.String():      "Taiko Alpha-3 L2 (Grímsvötn)",
+	// CHANGE(MXC): add Mxc network name.
+	MxcMainnetNetworkID.String(): "Mxc",
+	MxcWannseeNetworkID.String(): "Mxc Alpha-3 (Wannsee)",
 }
 
 // TrustedCheckpoint represents a set of post-processed trie roots (CHT and
@@ -458,8 +454,8 @@ type ChainConfig struct {
 	Ethash *EthashConfig `json:"ethash,omitempty"`
 	Clique *CliqueConfig `json:"clique,omitempty"`
 
-	// CHANGE(taiko): Taiko network flag.
-	Taiko    bool           `json:"taiko"`
+	// CHANGE(mxc): Mxc network flag.
+	Mxc      bool           `json:"mxc"`
 	Treasury common.Address `json:"treasury"`
 }
 
@@ -493,9 +489,9 @@ func (c *ChainConfig) Description() string {
 	}
 	banner += fmt.Sprintf("Chain ID:  %v (%s)\n", c.ChainID, network)
 	switch {
-	// CHANGE(taiko): print Taiko consensus engine in banner.
-	case c.Taiko:
-		banner += "Consensus: Taiko\n"
+	// CHANGE(mxc): print Mxc consensus engine in banner.
+	case c.Mxc:
+		banner += "Consensus: Mxc\n"
 	case c.Ethash != nil:
 		if c.TerminalTotalDifficulty == nil {
 			banner += "Consensus: Ethash (proof-of-work)\n"

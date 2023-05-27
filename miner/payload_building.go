@@ -179,8 +179,8 @@ func (w *worker) buildPayload(args *BuildPayloadArgs) (*Payload, error) {
 		for {
 			select {
 			case <-timer.C:
-				// CHANGE(taiko): do not update payload.
-				if w.chainConfig.Taiko {
+				// CHANGE(mxc): do not update payload.
+				if w.chainConfig.Mxc {
 					continue
 				}
 				start := time.Now()

@@ -12,23 +12,23 @@ import (
 )
 
 var (
-	TaikoFlag = cli.BoolFlag{
-		Name:  "taiko",
-		Usage: "Taiko network",
+	MxcFlag = cli.BoolFlag{
+		Name:  "mxc",
+		Usage: "mxc network",
 	}
 )
 
-// RegisterTaikoAPIs initializes and registers the Taiko RPC APIs.
-func RegisterTaikoAPIs(stack *node.Node, cfg *ethconfig.Config, backend *eth.Ethereum) {
-	if os.Getenv("TAIKO_TEST") != "" {
+// RegisterMxcAPIs initializes and registers the mxc RPC APIs.
+func RegisterMxcAPIs(stack *node.Node, cfg *ethconfig.Config, backend *eth.Ethereum) {
+	if os.Getenv("MXC_TEST") != "" {
 		return
 	}
-	// Add methods under "taiko_" RPC namespace to the available APIs list
+	// Add methods under "mxc_" RPC namespace to the available APIs list
 	stack.RegisterAPIs([]rpc.API{
 		{
-			Namespace: "taiko",
+			Namespace: "mxc",
 			Version:   params.VersionWithMeta,
-			Service:   eth.NewTaikoAPIBackend(backend),
+			Service:   eth.NewMxcAPIBackend(backend),
 			Public:    true,
 		},
 	})

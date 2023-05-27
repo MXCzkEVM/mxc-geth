@@ -979,7 +979,7 @@ type generateParams struct {
 	withdrawals   types.Withdrawals // List of withdrawals to include in block.
 	noUncle       bool              // Flag whether the uncle block inclusion is allowed
 	noTxs         bool              // Flag whether an empty block without any transaction is expected
-	baseFeePerGas *big.Int          // CHANGE(taiko): The base fee per gas for the next block
+	baseFeePerGas *big.Int          // CHANGE(mxc): The base fee per gas for the next block
 }
 
 // prepareWork constructs the sealing task according to the given parameters,
@@ -1002,8 +1002,8 @@ func (w *worker) prepareWork(genParams *generateParams) (*environment, error) {
 	// to parent+1 if the mutation is allowed.
 	timestamp := genParams.timestamp
 	if parent.Time >= timestamp {
-		// CHANGE(taiko): block.timestamp == parent.timestamp is allowed in Taiko protocol.
-		if !w.chainConfig.Taiko {
+		// CHANGE(mxc): block.timestamp == parent.timestamp is allowed in Mxc protocol.
+		if !w.chainConfig.Mxc {
 			if genParams.forceTime {
 				return nil, fmt.Errorf("invalid timestamp, parent %d given %d", parent.Time, timestamp)
 			}
@@ -1032,7 +1032,7 @@ func (w *worker) prepareWork(genParams *generateParams) (*environment, error) {
 	}
 	// Set baseFee and GasLimit if we are on an EIP-1559 chain
 	if w.chainConfig.IsLondon(header.Number) {
-		if w.chainConfig.Taiko && genParams.baseFeePerGas != nil {
+		if w.chainConfig.Mxc && genParams.baseFeePerGas != nil {
 			header.BaseFee = genParams.baseFeePerGas
 		} else {
 			header.BaseFee = misc.CalcBaseFee(w.chainConfig, parent)

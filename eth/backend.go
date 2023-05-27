@@ -142,12 +142,12 @@ func New(stack *node.Node, config *ethconfig.Config) (*Ethereum, error) {
 		return nil, err
 	}
 
-	// CHANGE(taiko): set if `--taiko` flag is set.
-	var isTaiko bool
+	// CHANGE(MXC): set if `--mxc` flag is set.
+	var isMxc bool
 	if config.Genesis != nil && config.Genesis.Config != nil {
-		isTaiko = config.Genesis.Config.Taiko
+		isMxc = config.Genesis.Config.Mxc
 	}
-	engine := ethconfig.CreateConsensusEngine(stack, &ethashConfig, cliqueConfig, config.Miner.Notify, config.Miner.Noverify, chainDb, isTaiko)
+	engine := ethconfig.CreateConsensusEngine(stack, &ethashConfig, cliqueConfig, config.Miner.Notify, config.Miner.Noverify, chainDb, isMxc)
 
 	eth := &Ethereum{
 		config:            config,

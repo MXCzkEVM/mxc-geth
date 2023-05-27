@@ -36,7 +36,7 @@ type PayloadAttributes struct {
 	Random                common.Hash         `json:"prevRandao"            gencodec:"required"`
 	SuggestedFeeRecipient common.Address      `json:"suggestedFeeRecipient" gencodec:"required"`
 	Withdrawals           []*types.Withdrawal `json:"withdrawals"`
-	// CHANGE(taiko): extra fields.
+	// CHANGE(mxc): extra fields.
 	BaseFeePerGas *big.Int        `json:"baseFeePerGas" gencodec:"required"`
 	BlockMetadata *BlockMetadata  `json:"blockMetadata" gencodec:"required"`
 	L1Origin      *rawdb.L1Origin `json:"l1Origin" gencodec:"required"`
@@ -49,7 +49,7 @@ type payloadAttributesMarshaling struct {
 
 //go:generate go run github.com/fjl/gencodec -type BlockMetadata -field-override blockMetadataMarshaling -out gen_blockmetadata.go
 
-// CHANGE(taiko): BlockMetadata represents a `BlockMetadata` struct defined in
+// CHANGE(mxc): BlockMetadata represents a `BlockMetadata` struct defined in
 // protocol's `LibData`.
 type BlockMetadata struct {
 	// Fields defined in `LibData.blockMetadata`.
@@ -59,12 +59,12 @@ type BlockMetadata struct {
 	MixHash     common.Hash    `json:"mixHash"     gencodec:"required"`
 	ExtraData   []byte         `json:"extraData"     gencodec:"required"`
 
-	// Extra fields required in go-taiko.
+	// Extra fields required in go-mxc.
 	TxList         []byte   `json:"txList"     gencodec:"required"`
 	HighestBlockID *big.Int `json:"highestBlockID"     gencodec:"required"`
 }
 
-// CHANGE(taiko): JSON type overrides for BlockMetadata.
+// CHANGE(mxc): JSON type overrides for BlockMetadata.
 type blockMetadataMarshaling struct {
 	Timestamp hexutil.Uint64
 	TxList    hexutil.Bytes
@@ -90,8 +90,8 @@ type ExecutableData struct {
 	BlockHash     common.Hash         `json:"blockHash"     gencodec:"required"`
 	Transactions  [][]byte            `json:"transactions"  gencodec:"required"`
 	Withdrawals   []*types.Withdrawal `json:"withdrawals"`
-	TxHash        common.Hash         `json:"txHash"` // CHANGE(taiko): allow passing txHash directly instead of transactions list
-	TaikoBlock    bool                // CHANGE(taiko): whether this is a Taiko L2 block, only used by ExecutableDataToBlock
+	TxHash        common.Hash         `json:"txHash"` // CHANGE(mxc): allow passing txHash directly instead of transactions list
+	MxcBlock      bool                // CHANGE(MXC): whether this is a Mxc L2 block, only used by ExecutableDataToBlock
 }
 
 // JSON type overrides for executableData.
@@ -211,8 +211,8 @@ func ExecutableDataToBlock(params ExecutableData) (*types.Block, error) {
 	var withdrawalsRoot *common.Hash
 	if params.Withdrawals != nil {
 		var h common.Hash
-		if params.TaikoBlock {
-			h = types.CalcWithdrawalsRootTaiko(params.Withdrawals)
+		if params.MxcBlock {
+			h = types.CalcWithdrawalsRootMxc(params.Withdrawals)
 		} else {
 			h = types.DeriveSha(types.Withdrawals(params.Withdrawals), trie.NewStackTrie(nil))
 		}

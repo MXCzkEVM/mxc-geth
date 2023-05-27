@@ -398,7 +398,7 @@ func Test_CalcWithdrawalsRootTaiko(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := CalcWithdrawalsRootTaiko(tt.withdrawals)
+			got := CalcWithdrawalsRootMxc(tt.withdrawals)
 			assert.Equal(t, tt.want, got)
 		})
 	}
