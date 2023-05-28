@@ -31,5 +31,5 @@ var MxcChainConfig = &ChainConfig{
 	TerminalTotalDifficulty:       common.Big0,
 	TerminalTotalDifficultyPassed: true,
 	Mxc:                           true,
-	Treasury:                      common.HexToAddress("0xdf09A0afD09a63fb04ab3573922437e1e637dE8b"),
+	Treasury:                      common.HexToAddress("0x1C2303693Fd5A8b2E0841Ea86c6a51F4cc007E25"),
 }
