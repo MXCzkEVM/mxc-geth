@@ -11,20 +11,20 @@ import (
 	"github.com/ethereum/go-ethereum/log"
 )
 
-// TaikoAPIBackend handles l2 node related RPC calls.
-type TaikoAPIBackend struct {
+// MxcAPIBackend handles l2 node related RPC calls.
+type MxcAPIBackend struct {
 	eth *Ethereum
 }
 
-// NewMxcAPIBackend creates a new TaikoAPIBackend instance.
-func NewMxcAPIBackend(eth *Ethereum) *TaikoAPIBackend {
-	return &TaikoAPIBackend{
+// NewMxcAPIBackend creates a new MxcAPIBackend instance.
+func NewMxcAPIBackend(eth *Ethereum) *MxcAPIBackend {
+	return &MxcAPIBackend{
 		eth: eth,
 	}
 }
 
 // HeadL1Origin returns the latest L2 block's corresponding L1 origin.
-func (s *TaikoAPIBackend) HeadL1Origin() (*rawdb.L1Origin, error) {
+func (s *MxcAPIBackend) HeadL1Origin() (*rawdb.L1Origin, error) {
 	blockID, err := rawdb.ReadHeadL1Origin(s.eth.ChainDb())
 	if err != nil {
 		return nil, err
@@ -47,7 +47,7 @@ func (s *TaikoAPIBackend) HeadL1Origin() (*rawdb.L1Origin, error) {
 }
 
 // L1OriginByID returns the L2 block's corresponding L1 origin.
-func (s *TaikoAPIBackend) L1OriginByID(blockID *math.HexOrDecimal256) (*rawdb.L1Origin, error) {
+func (s *MxcAPIBackend) L1OriginByID(blockID *math.HexOrDecimal256) (*rawdb.L1Origin, error) {
 	l1Origin, err := rawdb.ReadL1Origin(s.eth.ChainDb(), (*big.Int)(blockID))
 	if err != nil {
 		return nil, err
@@ -61,7 +61,7 @@ func (s *TaikoAPIBackend) L1OriginByID(blockID *math.HexOrDecimal256) (*rawdb.L1
 }
 
 // TxPoolContent retrieves the transaction pool content with the given upper limits.
-func (s *TaikoAPIBackend) TxPoolContent(
+func (s *MxcAPIBackend) TxPoolContent(
 	maxTransactionsPerBlock uint64,
 	blockMaxGasLimit uint64,
 	maxBytesPerTxList uint64,

@@ -403,8 +403,8 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 	} else {
 		fee := new(big.Int).SetUint64(st.gasUsed())
 		fee.Mul(fee, effectiveTip)
-		// CHANGE(MXC): coinbase reward redirect to LPWAN
-		st.state.AddBalance(st.evm.Context.Coinbase, fee)
+		// CHANGE(MXC): coinbase reward redirect to treasury
+		st.state.AddBalance(st.evm.ChainConfig().Treasury, fee)
 		// CHANGE(mxc): basefee is not burnt, but sent to a treasury instead.
 		if st.evm.ChainConfig().Mxc && st.evm.Context.BaseFee != nil && !st.isAnchor() {
 			st.state.AddBalance(
