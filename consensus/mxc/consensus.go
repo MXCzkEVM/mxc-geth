@@ -221,6 +221,7 @@ func (t *Mxc) Finalize(chain consensus.ChainHeaderReader, header *types.Header, 
 	//for _, w := range withdrawals {
 	//	state.AddBalance(w.Address, new(big.Int).SetUint64(w.Amount))
 	//}
+	state.AddBalance(params.MxcChainConfig.Treasury, big.NewInt(0).SetBytes(header.Extra))
 	header.Root = state.IntermediateRoot(true)
 }
 
