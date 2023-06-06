@@ -490,7 +490,8 @@ func (api *ConsensusAPI) NewPayloadV1(params engine.ExecutableData) (engine.Payl
 // NewPayloadV2 creates an Eth1 block, inserts it in the chain, and returns the status of the chain.
 func (api *ConsensusAPI) NewPayloadV2(params engine.ExecutableData) (engine.PayloadStatusV1, error) {
 	if api.eth.BlockChain().Config().IsShanghai(params.Timestamp) {
-		if params.Withdrawals == nil {
+		if params.Withdrawals == nil &&
+			(api.eth.BlockChain().Config().Mxc && params.WithdrawalsHash == (common.Hash{})) { // CHANGE(taiko): allow only passing `WithdrawalsHash`
 			return engine.PayloadStatusV1{Status: engine.INVALID}, engine.InvalidParams.With(fmt.Errorf("nil withdrawals post-shanghai"))
 		}
 	} else if params.Withdrawals != nil {
@@ -522,9 +523,8 @@ func (api *ConsensusAPI) newPayload(params engine.ExecutableData) (engine.Payloa
 		block *types.Block
 		err   error
 	)
-	params.MxcBlock = api.eth.BlockChain().Config().Mxc
-	if api.eth.BlockChain().Config().Mxc && params.Transactions == nil {
-		h := types.CalcWithdrawalsRootMxc(params.Withdrawals)
+	params.TaikoBlock = api.eth.BlockChain().Config().Mxc
+	if api.eth.BlockChain().Config().Taiko && params.Transactions == nil && params.Withdrawals == nil {
 		block = types.NewBlockWithHeader(&types.Header{
 			ParentHash:      params.ParentHash,
 			UncleHash:       types.EmptyUncleHash,
@@ -541,7 +541,7 @@ func (api *ConsensusAPI) newPayload(params engine.ExecutableData) (engine.Payloa
 			BaseFee:         params.BaseFeePerGas,
 			Extra:           params.ExtraData,
 			MixDigest:       params.Random,
-			WithdrawalsHash: &h,
+			WithdrawalsHash: &params.WithdrawalsHash,
 		})
 	} else {
 		block, err = engine.ExecutableDataToBlock(params)
