@@ -800,7 +800,7 @@ func (q *queue) DeliverBodies(id string, txLists [][]*types.Transaction, txListH
 				}
 			} else {
 				if os.Getenv("TAIKO_TEST") == "" {
-					withdrawalListHashes[index] = types.CalcWithdrawalsRootTaiko(withdrawalLists[index])
+					withdrawalListHashes[index] = types.CalcWithdrawalsRootMxc(withdrawalLists[index])
 				}
 			}
 

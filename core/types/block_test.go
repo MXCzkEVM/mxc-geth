@@ -344,7 +344,7 @@ func TestRlpDecodeParentHash(t *testing.T) {
 	}
 }
 
-// CHANGE(taiko): test `CalcWithdrawalsRootTaiko`
+// CHANGE(taiko): test `CalcWithdrawalsRootMxc`
 func TestCalcWithdrawalsRootTaiko(t *testing.T) {
 	tests := []struct {
 		name        string
