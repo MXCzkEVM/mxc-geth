@@ -92,7 +92,7 @@ type ExecutableData struct {
 	Withdrawals     []*types.Withdrawal `json:"withdrawals"`
 	TxHash          common.Hash         `json:"txHash"`          // CHANGE(mxc): allow passing txHash directly instead of transactions list
 	WithdrawalsHash common.Hash         `json:"withdrawalsHash"` // CHANGE(mxc): allow passing WithdrawalsHash directly instead of withdrawals
-	mxcBlock      bool                // CHANGE(mxc): whether this is a Mxc L2 block, only used by ExecutableDataToBlock
+	MxcBlock        bool                // CHANGE(mxc): whether this is a Mxc L2 block, only used by ExecutableDataToBlock
 }
 
 // JSON type overrides for executableData.
