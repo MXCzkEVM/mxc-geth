@@ -523,8 +523,8 @@ func (api *ConsensusAPI) newPayload(params engine.ExecutableData) (engine.Payloa
 		block *types.Block
 		err   error
 	)
-	params.TaikoBlock = api.eth.BlockChain().Config().Mxc
-	if api.eth.BlockChain().Config().Taiko && params.Transactions == nil && params.Withdrawals == nil {
+	params.MxcBlock = api.eth.BlockChain().Config().Mxc
+	if api.eth.BlockChain().Config().Mxc && params.Transactions == nil && params.Withdrawals == nil {
 		block = types.NewBlockWithHeader(&types.Header{
 			ParentHash:      params.ParentHash,
 			UncleHash:       types.EmptyUncleHash,
