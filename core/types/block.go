@@ -467,7 +467,7 @@ func HeaderParentHashFromRLP(header []byte) common.Hash {
 }
 
 var (
-	ethDepositsType, _ = abi.NewType("tuple[]", "[]TaikoData.EthDeposit", []abi.ArgumentMarshaling{
+	ethDepositsType, _ = abi.NewType("tuple[]", "[]MxcData.EthDeposit", []abi.ArgumentMarshaling{
 		{Name: "recipient", Type: "address"},
 		{Name: "amount", Type: "uint96"},
 		{Name: "id", Type: "uint64"},
@@ -484,7 +484,7 @@ type ethDeposit struct {
 // CHANGE(mxc): calc withdrawals root by abi.encode deposits with keccak256.
 // Golang equivalent to this solidity function:
 //
-//	function hashEthDeposits(TaikoData.EthDeposit[] memory deposits) internal pure returns (bytes32) {
+//	function hashEthDeposits(MxcData.EthDeposit[] memory deposits) internal pure returns (bytes32) {
 //		return keccak256(abi.encode(deposits));
 //	}
 func CalcWithdrawalsRootMxc(withdrawals []*Withdrawal) common.Hash {

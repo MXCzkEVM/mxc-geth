@@ -238,7 +238,7 @@ func (st *StateTransition) buyGas() error {
 		balanceCheck = balanceCheck.Mul(balanceCheck, st.msg.GasFeeCap)
 		balanceCheck.Add(balanceCheck, st.msg.Value)
 	}
-	// CHANGE(mxc): skip balance check for TaikoL2.anchor transaction.
+	// CHANGE(mxc): skip balance check for MxcL2.anchor transaction.
 	if st.isAnchor() {
 		balanceCheck = common.Big0
 		mgval = common.Big0
