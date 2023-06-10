@@ -793,7 +793,7 @@ func (q *queue) DeliverBodies(id string, txLists [][]*types.Transaction, txListH
 			if withdrawalLists[index] == nil {
 				return errInvalidBody
 			}
-			// CHANGE(taiko): change the empty withdrawalsRoot hash to EmptyCodeHash
+			// CHANGE(MXC): change the empty withdrawalsRoot hash to EmptyCodeHash
 			if withdrawalListHashes[index] == types.EmptyRootHash {
 				if os.Getenv("TAIKO_TEST") == "" {
 					withdrawalListHashes[index] = common.HexToHash("0x569e75fc77c1a856f6daaf9e69d8a9566ca34aa47f9133711ce065a571af0cfd")

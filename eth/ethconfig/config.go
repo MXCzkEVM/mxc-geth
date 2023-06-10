@@ -211,9 +211,9 @@ type Config struct {
 }
 
 // CreateConsensusEngine creates a consensus engine for the given chain configuration.
-func CreateConsensusEngine(stack *node.Node, ethashConfig *ethash.Config, cliqueConfig *params.CliqueConfig, notify []string, noverify bool, db ethdb.Database, isTaiko bool) consensus.Engine {
+func CreateConsensusEngine(stack *node.Node, ethashConfig *ethash.Config, cliqueConfig *params.CliqueConfig, notify []string, noverify bool, db ethdb.Database, isMxc bool) consensus.Engine {
 	// CHANGE(mxc): use Mxc consensus engine when the --mxc flag is set.
-	if isTaiko {
+	if isMxc {
 		return mxc.New()
 	}
 
