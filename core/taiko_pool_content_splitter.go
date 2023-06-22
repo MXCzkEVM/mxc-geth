@@ -28,7 +28,6 @@ func (pc PoolContent) Len() int {
 func (pc PoolContent) ToTxsByPriceAndNonce(
 	chainID *big.Int,
 	localAddresses []common.Address,
-	gasPrice *big.Int,
 ) (
 	locals *types.TransactionsByPriceAndNonce,
 	remotes *types.TransactionsByPriceAndNonce,
@@ -38,19 +37,9 @@ func (pc PoolContent) ToTxsByPriceAndNonce(
 		remoteTxs = map[common.Address]types.Transactions{}
 	)
 
-	gasPriceLowerLimit := big.NewInt(0).Div(big.NewInt(0).Mul(gasPrice, big.NewInt(95)), big.NewInt(100))
 	for address, txsWithNonce := range pc {
 	out:
 		for _, tx := range txsWithNonce {
-			// Adjust baseFeePerGas limit 95%-105%.
-			if tx.GasPrice().Cmp(gasPriceLowerLimit) < 0 {
-				log.Debug("Ignore max fee per gas less than block basee fee",
-					"gas price", gasPrice.Uint64(),
-					"tx gas price", tx.GasPrice().Uint64(),
-					"lower limit", gasPriceLowerLimit.Uint64(),
-				)
-				continue
-			}
 			for _, localAddress := range localAddresses {
 				if address == localAddress {
 					localTxs[address] = append(localTxs[address], tx)
@@ -75,7 +64,6 @@ type PoolContentSplitter struct {
 	maxBytesPerTxList       uint64
 	minTxGasLimit           uint64
 	locals                  []common.Address
-	gasPrice                *big.Int
 }
 
 // NewPoolContentSplitter creates a new PoolContentSplitter instance.
@@ -86,7 +74,6 @@ func NewPoolContentSplitter(
 	maxBytesPerTxList uint64,
 	minTxGasLimit uint64,
 	locals []string,
-	gasPrice *big.Int,
 ) (*PoolContentSplitter, error) {
 	var localsAddresses []common.Address
 	for _, account := range locals {
@@ -104,7 +91,6 @@ func NewPoolContentSplitter(
 		maxBytesPerTxList:       maxBytesPerTxList,
 		minTxGasLimit:           minTxGasLimit,
 		locals:                  localsAddresses,
-		gasPrice:                gasPrice,
 	}, nil
 }
 
@@ -112,7 +98,7 @@ func NewPoolContentSplitter(
 // transactions list satisfies the rules defined in Mxc protocol.
 func (p *PoolContentSplitter) Split(poolContent PoolContent) []types.Transactions {
 	var (
-		localTxs, remoteTxs   = poolContent.ToTxsByPriceAndNonce(p.chainID, p.locals, p.gasPrice)
+		localTxs, remoteTxs   = poolContent.ToTxsByPriceAndNonce(p.chainID, p.locals)
 		splittedLocalTxLists  = p.splitTxs(localTxs)
 		splittedRemoteTxLists = p.splitTxs(remoteTxs)
 	)
