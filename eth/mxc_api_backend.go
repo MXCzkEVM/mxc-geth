@@ -79,7 +79,6 @@ func (s *MxcAPIBackend) TxPoolContent(
 		"minTxGasLimit", minTxGasLimit,
 		"locals", locals,
 	)
-
 	contentSplitter, err := core.NewPoolContentSplitter(
 		s.eth.BlockChain().Config().ChainID,
 		maxTransactionsPerBlock,
@@ -87,6 +86,7 @@ func (s *MxcAPIBackend) TxPoolContent(
 		maxBytesPerTxList,
 		minTxGasLimit,
 		locals,
+		s.eth.blockchain.CurrentHeader().BaseFee,
 	)
 	if err != nil {
 		return nil, err
