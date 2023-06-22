@@ -44,7 +44,7 @@ func (pc PoolContent) ToTxsByPriceAndNonce(
 		for _, tx := range txsWithNonce {
 			// Adjust baseFeePerGas limit 95%-105%.
 			if tx.GasPrice().Cmp(gasPriceLowerLimit) < 0 {
-				log.Debug("Ignore max fee per gas less than block basee fee",
+				log.Info("Ignore max fee per gas less than block basee fee",
 					"gas price", gasPrice.Uint64(),
 					"tx gas price", tx.GasPrice().Uint64(),
 					"lower limit", gasPriceLowerLimit.Uint64(),
