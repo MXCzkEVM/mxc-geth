@@ -4,6 +4,7 @@ import (
 	"math/big"
 
 	"github.com/ethereum/go-ethereum"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/math"
 	"github.com/ethereum/go-ethereum/core"
 	"github.com/ethereum/go-ethereum/core/rawdb"
@@ -68,7 +69,7 @@ func (s *MxcAPIBackend) TxPoolContent(
 	minTxGasLimit uint64,
 	locals []string,
 ) ([]types.Transactions, error) {
-	pending := s.eth.TxPool().Pending(true)
+	pending := s.eth.TxPool().Pending(false)
 
 	log.Debug(
 		"Fetching L2 pending transactions finished",
@@ -96,7 +97,7 @@ func (s *MxcAPIBackend) TxPoolContent(
 		txsCount = 0
 		txLists  []types.Transactions
 	)
-	for _, splittedTxs := range contentSplitter.Split(pending) {
+	for _, splittedTxs := range contentSplitter.Split(filterTxs(pending, s.eth.blockchain.CurrentHeader().BaseFee)) {
 		if txsCount+splittedTxs.Len() < int(maxTransactionsPerBlock) {
 			txLists = append(txLists, splittedTxs)
 			txsCount += splittedTxs.Len()
@@ -108,4 +109,37 @@ func (s *MxcAPIBackend) TxPoolContent(
 	}
 
 	return txLists, nil
+}
+
+func filterTxs(pendings map[common.Address]types.Transactions, baseFee *big.Int) map[common.Address]types.Transactions {
+	executableTxs := make(map[common.Address]types.Transactions)
+	gasPriceLowerLimit := big.NewInt(0).Div(big.NewInt(0).Mul(baseFee, big.NewInt(95)), big.NewInt(100))
+
+	for addr, txs := range pendings {
+		pendingTxs := make(types.Transactions, 0)
+		for _, tx := range txs {
+			// Check baseFee, should not be zero
+			if tx.GasFeeCap().Uint64() == 0 || tx.GasPrice().Cmp(gasPriceLowerLimit) < 0 {
+				log.Debug("Ignore max fee per gas less than block base fee",
+					"gas price", baseFee.Uint64(),
+					"tx gas price", tx.GasPrice().Uint64(),
+					"lower limit", gasPriceLowerLimit.Uint64(),
+				)
+				break
+			}
+
+			// If this tx is a transfer and with high gas limit, ignore it.
+			if len(tx.Data()) == 0 && tx.Gas() > 100_000 {
+				break
+			}
+
+			pendingTxs = append(pendingTxs, tx)
+		}
+
+		if len(pendingTxs) > 0 {
+			executableTxs[addr] = pendingTxs
+		}
+	}
+
+	return executableTxs
 }
