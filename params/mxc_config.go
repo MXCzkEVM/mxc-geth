@@ -10,7 +10,7 @@ func u64(val uint64) *uint64 { return &val }
 
 // Network IDs
 var (
-	MxcMainnetNetworkID = big.NewInt(516)
+	MxcMainnetNetworkID = big.NewInt(18686)
 	MxcWannseeNetworkID = big.NewInt(5167003)
 )
 
