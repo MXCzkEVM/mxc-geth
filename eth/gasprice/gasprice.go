@@ -214,6 +214,10 @@ func (oracle *Oracle) SuggestTipCap(ctx context.Context) (*big.Int, error) {
 	if price.Cmp(oracle.maxPrice) > 0 {
 		price = new(big.Int).Set(oracle.maxPrice)
 	}
+
+	// CHANGE(MXC): When there are network restrictions, the baseFee should be increased here to avoid transaction delays.
+	price = price.Add(price, new(big.Int).Div(head.BaseFee, big.NewInt(20)))
+
 	oracle.cacheLock.Lock()
 	oracle.lastHead = headHash
 	oracle.lastPrice = price
