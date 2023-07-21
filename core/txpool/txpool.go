@@ -695,6 +695,13 @@ func (pool *TxPool) add(tx *types.Transaction, local bool) (replaced bool, err e
 	// the sender is marked as local previously, treat it as the local transaction.
 	isLocal := local || pool.locals.containsTx(tx)
 
+	// CHANGE(MXC): check if the transaction gas price is less than the minimum gas price
+	if tx.GasPrice().Cmp(pool.gasPrice) < 0 {
+		log.Trace("Discarding underpriced transaction", "hash", hash, "gasPrice", tx.GasPrice(), "local", isLocal)
+		underpricedTxMeter.Mark(1)
+		return false, ErrUnderpriced
+	}
+
 	// If the transaction fails basic validation, discard it
 	if err := pool.validateTx(tx, isLocal); err != nil {
 		log.Trace("Discarding invalid transaction", "hash", hash, "err", err)
