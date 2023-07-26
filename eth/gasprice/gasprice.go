@@ -215,8 +215,11 @@ func (oracle *Oracle) SuggestTipCap(ctx context.Context) (*big.Int, error) {
 		price = new(big.Int).Set(oracle.maxPrice)
 	}
 
-	// CHANGE(MXC): When there are network restrictions, the baseFee should be increased here to avoid transaction delays.
+	// CHANGE(MXC): When there are network restrictions, the baseFee should be increased here to avoid transaction delays. The minimum bid is 100,000 gwei.
 	price = price.Add(price, new(big.Int).Div(head.BaseFee, big.NewInt(20)))
+	if price.Cmp(big.NewInt(1e14)) < 0 {
+		price = big.NewInt(1e14)
+	}
 
 	oracle.cacheLock.Lock()
 	oracle.lastHead = headHash
