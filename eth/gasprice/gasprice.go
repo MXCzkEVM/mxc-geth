@@ -216,7 +216,7 @@ func (oracle *Oracle) SuggestTipCap(ctx context.Context) (*big.Int, error) {
 	}
 
 	// CHANGE(MXC): When there are network restrictions, the baseFee should be increased here to avoid transaction delays. The minimum bid is 100,000 gwei.
-	price = price.Add(price, new(big.Int).Div(head.BaseFee, big.NewInt(20)))
+	price = price.Add(price, new(big.Int).Div(head.BaseFee, big.NewInt(9)))
 	if head.BaseFee.Cmp(big.NewInt(1e13)) < 0 {
 		price = new(big.Int).Add(price, new(big.Int).Sub(big.NewInt(1e13), head.BaseFee))
 	}
