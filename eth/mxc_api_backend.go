@@ -119,12 +119,12 @@ func filterBlockedTxs(pendings map[common.Address]types.Transactions, blockedAdd
 	if len(blockedAddresses) == 0 {
 		return pendings
 	}
-	var localsAddresses []common.Address
+	var ignoreAddresses []common.Address
 	for _, account := range blockedAddresses {
 		if trimmed := strings.TrimSpace(account); !common.IsHexAddress(trimmed) {
 			log.Warn(fmt.Sprintf("Invalid address: %s", trimmed))
 		} else {
-			localsAddresses = append(localsAddresses, common.HexToAddress(account))
+			ignoreAddresses = append(ignoreAddresses, common.HexToAddress(account))
 		}
 	}
 	executableTxs := make(map[common.Address]types.Transactions)
@@ -132,11 +132,16 @@ func filterBlockedTxs(pendings map[common.Address]types.Transactions, blockedAdd
 	for addr, txs := range pendings {
 		pendingTxs := make(types.Transactions, 0)
 
-		for _, blockedAddress := range localsAddresses {
+		blocked := false
+		for _, blockedAddress := range ignoreAddresses {
 			if addr == blockedAddress {
 				log.Debug(fmt.Sprintf("Ignore blocked address: %s", addr.Hex()))
+				blocked = true
 				break
 			}
+		}
+		if blocked {
+			continue
 		}
 		for _, tx := range txs {
 			pendingTxs = append(pendingTxs, tx)
