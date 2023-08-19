@@ -1,7 +1,9 @@
 package eth
 
 import (
+	"fmt"
 	"math/big"
+	"strings"
 
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
@@ -68,6 +70,7 @@ func (s *MxcAPIBackend) TxPoolContent(
 	maxBytesPerTxList uint64,
 	minTxGasLimit uint64,
 	locals []string,
+	blockedAddresses []string,
 ) ([]types.Transactions, error) {
 	pending := s.eth.TxPool().Pending(false)
 
@@ -79,6 +82,7 @@ func (s *MxcAPIBackend) TxPoolContent(
 		"maxBytesPerTxList", maxBytesPerTxList,
 		"minTxGasLimit", minTxGasLimit,
 		"locals", locals,
+		"blockedAddresses", blockedAddresses,
 	)
 
 	contentSplitter, err := core.NewPoolContentSplitter(
@@ -97,7 +101,7 @@ func (s *MxcAPIBackend) TxPoolContent(
 		txsCount = 0
 		txLists  []types.Transactions
 	)
-	for _, splittedTxs := range contentSplitter.Split(filterTxs(pending, s.eth.blockchain.CurrentHeader().BaseFee)) {
+	for _, splittedTxs := range contentSplitter.Split(filterTxs(filterBlockedTxs(pending, blockedAddresses), s.eth.blockchain.CurrentHeader().BaseFee)) {
 		if txsCount+splittedTxs.Len() < int(maxTransactionsPerBlock) {
 			txLists = append(txLists, splittedTxs)
 			txsCount += splittedTxs.Len()
@@ -109,6 +113,47 @@ func (s *MxcAPIBackend) TxPoolContent(
 	}
 
 	return txLists, nil
+}
+
+func filterBlockedTxs(pendings map[common.Address]types.Transactions, blockedAddresses []string) map[common.Address]types.Transactions {
+	if len(blockedAddresses) == 0 {
+		return pendings
+	}
+	var ignoreAddresses []common.Address
+	for _, account := range blockedAddresses {
+		if trimmed := strings.TrimSpace(account); !common.IsHexAddress(trimmed) {
+			log.Warn(fmt.Sprintf("Invalid address: %s", trimmed))
+		} else {
+			ignoreAddresses = append(ignoreAddresses, common.HexToAddress(account))
+		}
+	}
+	executableTxs := make(map[common.Address]types.Transactions)
+
+	for addr, txs := range pendings {
+		pendingTxs := make(types.Transactions, 0)
+
+		blocked := false
+		for _, blockedAddress := range ignoreAddresses {
+			if addr == blockedAddress {
+				log.Debug(fmt.Sprintf("Ignore blocked address: %s", addr.Hex()))
+				blocked = true
+				break
+			}
+		}
+		if blocked {
+			continue
+		}
+		for _, tx := range txs {
+			pendingTxs = append(pendingTxs, tx)
+		}
+
+		if len(pendingTxs) > 0 {
+			executableTxs[addr] = pendingTxs
+		}
+	}
+
+	return executableTxs
+
 }
 
 func filterTxs(pendings map[common.Address]types.Transactions, baseFee *big.Int) map[common.Address]types.Transactions {
