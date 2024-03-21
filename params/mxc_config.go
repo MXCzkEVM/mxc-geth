@@ -12,6 +12,7 @@ func u64(val uint64) *uint64 { return &val }
 var (
 	MxcMainnetNetworkID = big.NewInt(18686)
 	MxcWannseeNetworkID = big.NewInt(5167003)
+	MxcGenevaNetworkID  = big.NewInt(5167004)
 )
 
 var MxcChainConfig = &ChainConfig{

@@ -354,6 +354,7 @@ var NetworkNames = map[string]string{
 	// CHANGE(MXC): add Mxc network name.
 	MxcMainnetNetworkID.String(): "Mxc",
 	MxcWannseeNetworkID.String(): "Mxc Alpha-3 (Wannsee)",
+	MxcGenevaNetworkID.String():  "MXC Geneva (Alpha-3)",
 }
 
 // TrustedCheckpoint represents a set of post-processed trie roots (CHT and
