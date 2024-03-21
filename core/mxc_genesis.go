@@ -18,6 +18,9 @@ func MxcGenesisBlock(networkID uint64) *Genesis {
 	case params.MxcWannseeNetworkID.Uint64():
 		chainConfig.ChainID = params.MxcWannseeNetworkID
 		allocJSON = mxcGenesis.MxcWannseeGenesisAllocJSON
+	case params.MxcGenevaNetworkID.Uint64():
+		chainConfig.ChainID = params.MxcGenevaNetworkID
+		allocJSON = mxcGenesis.MxcGenevaGenesisAllocJSON
 	default:
 		chainConfig.ChainID = params.MxcMainnetNetworkID
 		allocJSON = mxcGenesis.MainnetGenesisAllocJSON
