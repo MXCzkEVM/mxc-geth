@@ -240,6 +240,10 @@ func (w *worker) buildPayload(args *BuildPayloadArgs) (*Payload, error) {
 		for {
 			select {
 			case <-timer.C:
+				// CHANGE(moonchain): do not update payload.
+				if w.chainConfig.Mxc {
+					continue
+				}
 				// CHANGE(taiko): do not update payload.
 				if w.chainConfig.Taiko {
 					continue

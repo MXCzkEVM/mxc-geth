@@ -326,6 +326,9 @@ var NetworkNames = map[string]string{
 	JolnirNetworkID.String():           "Taiko Alpha-5 L2 (Jolnir)",
 	KatlaNetworkID.String():            "Taiko Alpha-6 L2 (Katla)",
 	HeklaNetworkID.String():            "Taiko Alpha-7 L2 (Hekla)",
+	// CHANGE(moonchain): add Mxc network name.
+	MoonchainMainnetNetworkID.String(): "Mxc",
+	MoonchainGenevaNetworkID.String():  "Mxc Geneva",
 }
 
 // ChainConfig is the core config which determines the blockchain settings.
@@ -378,8 +381,11 @@ type ChainConfig struct {
 	Clique *CliqueConfig `json:"clique,omitempty"`
 
 	// CHANGE(taiko): Taiko network flag.
-	Taiko       bool     `json:"taiko"`
+	Taiko       bool     `json:"taiko,omitempty"`
 	OntakeBlock *big.Int `json:"ontakeBlock,omitempty"` // Ontake switch block (nil = no fork, 0 = already activated)
+	// CHANGE(moomchain): Mxc network flag.
+	Mxc      bool           `json:"mxc,omitempty"`
+	Treasury common.Address `json:"treasury"`
 }
 
 // EthashConfig is the consensus engine configs for proof-of-work based sealing.
@@ -412,6 +418,9 @@ func (c *ChainConfig) Description() string {
 	}
 	banner += fmt.Sprintf("Chain ID:  %v (%s)\n", c.ChainID, network)
 	switch {
+	// CHANGE(moonchain): print Mxc consensus engine in banner.
+	case c.Mxc:
+		banner += "Consensus: Mxc zkEVM\n"
 	// CHANGE(taiko): print Taiko consensus engine in banner.
 	case c.Taiko:
 		banner += "Consensus: Taiko\n"

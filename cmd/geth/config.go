@@ -181,6 +181,8 @@ func makeFullNode(ctx *cli.Context) (*node.Node, ethapi.Backend) {
 
 	// CHANGE(TAIKO): register Taiko RPC APIs.
 	utils.RegisterTaikoAPIs(stack, &cfg.Eth, eth)
+	// CHANGE(MOONCHAIN): register Mxc RPC APIs.
+	utils.RegisterMoonchainAPIs(stack, &cfg.Eth, eth)
 
 	// Create gauge with geth system and build information
 	if eth != nil { // The 'eth' backend may be nil in light mode
