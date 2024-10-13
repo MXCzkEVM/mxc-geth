@@ -18,12 +18,12 @@ var (
 	}
 )
 
-// RegisterMoonchainAPIs initializes and registers the Taiko RPC APIs.
+// RegisterMoonchainAPIs initializes and registers the Moonchain RPC APIs.
 func RegisterMoonchainAPIs(stack *node.Node, cfg *ethconfig.Config, backend *eth.Ethereum) {
 	if os.Getenv("MOONCHAIN_TEST") != "" {
 		return
 	}
-	// Add methods under "taiko_" RPC namespace to the available APIs list
+	// Add methods under "moonchain_" RPC namespace to the available APIs list
 	stack.RegisterAPIs([]rpc.API{
 		{
 			Namespace: "moonchain",

@@ -1740,7 +1740,7 @@ func SetEthConfig(ctx *cli.Context, stack *node.Node, cfg *ethconfig.Config) {
 	}
 	// Override any default configs for hard coded networks.
 	switch {
-	// CHANGE(moonchain): when --moonchain flag is set, use the Taiko genesis.
+	// CHANGE(moonchain): when --mxc flag is set, use the Moonchain genesis.
 	case ctx.IsSet(MoonchainFlag.Name):
 		cfg.Genesis = core.MoonchainGenesisBlock(cfg.NetworkId)
 	// CHANGE(taiko): when --taiko flag is set, use the Taiko genesis.

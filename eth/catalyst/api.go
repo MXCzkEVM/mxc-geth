@@ -554,7 +554,7 @@ func (api *ConsensusAPI) NewPayloadV2(params engine.ExecutableData) (engine.Payl
 	}
 	if api.eth.BlockChain().Config().LatestFork(params.Timestamp) == forks.Shanghai {
 		if params.Withdrawals == nil &&
-			(api.eth.BlockChain().Config().Taiko && params.WithdrawalsHash == (common.Hash{})) {
+			(api.eth.BlockChain().Config().Taiko || api.eth.BlockChain().Config().Mxc) && params.WithdrawalsHash == (common.Hash{}) {
 			return engine.PayloadStatusV1{Status: engine.INVALID}, engine.InvalidParams.With(errors.New("nil withdrawals post-shanghai"))
 		}
 	} else {

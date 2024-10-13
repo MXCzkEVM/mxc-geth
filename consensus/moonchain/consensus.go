@@ -204,8 +204,6 @@ func (t *Moonchain) Finalize(chain consensus.ChainHeaderReader, header *types.He
 	for _, w := range withdrawals {
 		state.AddBalance(w.Address, uint256.MustFromBig(new(big.Int).SetUint64(w.Amount)))
 	}
-
-	state.AddBalance(t.moonchainL2Treasury, uint256.MustFromBig(new(big.Int).SetBytes(header.Extra)))
 	header.Root = state.IntermediateRoot(true)
 }
 

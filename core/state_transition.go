@@ -470,27 +470,19 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 		fee := new(uint256.Int).SetUint64(st.gasUsed())
 		fee.Mul(fee, effectiveTipU256)
 		st.state.AddBalance(st.evm.Context.Coinbase, fee)
-		// CHANGE(moonchain): basefee is not burnt, but sent to a treasury and block.coinbase instead.
-		// TODO: moonchain protocol update
-		if st.evm.ChainConfig().Mxc && st.evm.Context.BaseFee != nil && !st.msg.IsAnchor {
-			totalFee := new(big.Int).Mul(st.evm.Context.BaseFee, new(big.Int).SetUint64(st.gasUsed()))
-			feeCoinbase := new(big.Int).Div(
-				new(big.Int).Mul(totalFee, new(big.Int).SetUint64(uint64(st.msg.BasefeeSharingPctg))),
-				new(big.Int).SetUint64(100),
-			)
-			feeTreasury := new(big.Int).Sub(totalFee, feeCoinbase)
-			st.state.AddBalance(st.getMoonchainTreasuryAddress(), uint256.MustFromBig(feeTreasury))
-			st.state.AddBalance(st.evm.Context.Coinbase, uint256.MustFromBig(feeCoinbase))
-		}
 		// CHANGE(taiko): basefee is not burnt, but sent to a treasury and block.coinbase instead.
-		if st.evm.ChainConfig().Taiko && st.evm.Context.BaseFee != nil && !st.msg.IsAnchor {
+		if (st.evm.ChainConfig().Taiko || st.evm.ChainConfig().Mxc) && st.evm.Context.BaseFee != nil && !st.msg.IsAnchor {
 			totalFee := new(big.Int).Mul(st.evm.Context.BaseFee, new(big.Int).SetUint64(st.gasUsed()))
 			feeCoinbase := new(big.Int).Div(
 				new(big.Int).Mul(totalFee, new(big.Int).SetUint64(uint64(st.msg.BasefeeSharingPctg))),
 				new(big.Int).SetUint64(100),
 			)
 			feeTreasury := new(big.Int).Sub(totalFee, feeCoinbase)
-			st.state.AddBalance(st.getTreasuryAddress(), uint256.MustFromBig(feeTreasury))
+			if st.evm.ChainConfig().Mxc {
+				st.state.AddBalance(st.getMoonchainTreasuryAddress(), uint256.MustFromBig(feeTreasury))
+			} else {
+				st.state.AddBalance(st.getTreasuryAddress(), uint256.MustFromBig(feeTreasury))
+			}
 			st.state.AddBalance(st.evm.Context.Coinbase, uint256.MustFromBig(feeCoinbase))
 		}
 	}

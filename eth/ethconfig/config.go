@@ -167,7 +167,7 @@ type Config struct {
 // Clique is allowed for now to live standalone, but ethash is forbidden and can
 // only exist on already merged networks.
 func CreateConsensusEngine(config *params.ChainConfig, db ethdb.Database) (consensus.Engine, error) {
-	// CHANGE(moonchain): use Mxc consesus engine when the --moonchain flag is set
+	// CHANGE(moonchain): use Mxc consesus engine when the --mxc flag is set
 	if config.Mxc {
 		return moonchain.New(config), nil
 	}

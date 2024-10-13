@@ -959,12 +959,7 @@ func (w *worker) prepareWork(genParams *generateParams) (*environment, error) {
 	if parent.Time >= timestamp {
 		// CHANGE(taiko): block.timestamp == parent.timestamp is allowed in Taiko protocol.
 		// CHANGE(moonchain): block.timestamp == parent.timestamp is allowed in Mxc protocol.
-		if !w.chainConfig.Mxc {
-			if genParams.forceTime {
-				return nil, fmt.Errorf("invalid timestamp, parent %d given %d", parent.Time, timestamp)
-			}
-			timestamp = parent.Time + 1
-		} else if !w.chainConfig.Taiko {
+		if !w.chainConfig.Taiko && !w.chainConfig.Mxc {
 			if genParams.forceTime {
 				return nil, fmt.Errorf("invalid timestamp, parent %d given %d", parent.Time, timestamp)
 			}
@@ -993,7 +988,7 @@ func (w *worker) prepareWork(genParams *generateParams) (*environment, error) {
 	}
 	// Set baseFee and GasLimit if we are on an EIP-1559 chain
 	if w.chainConfig.IsLondon(header.Number) {
-		if w.chainConfig.Taiko && genParams.baseFeePerGas != nil {
+		if (w.chainConfig.Taiko || w.chainConfig.Mxc) && genParams.baseFeePerGas != nil {
 			header.BaseFee = genParams.baseFeePerGas
 		} else {
 			header.BaseFee = eip1559.CalcBaseFee(w.chainConfig, parent)

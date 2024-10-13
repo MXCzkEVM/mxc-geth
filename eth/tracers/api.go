@@ -270,7 +270,7 @@ func (api *API) traceChain(start, end *types.Block, config *TraceConfig, closed 
 				)
 				// Trace all the transactions contained within
 				for i, tx := range task.block.Transactions() {
-					if i == 0 && api.backend.ChainConfig().Taiko {
+					if i == 0 && (api.backend.ChainConfig().Taiko || api.backend.ChainConfig().Mxc) {
 						if err := tx.MarkAsAnchor(); err != nil {
 							log.Warn("Mark anchor transaction error", "error", err)
 							task.results[i] = &txTraceResult{TxHash: tx.Hash(), Error: err.Error()}
@@ -534,7 +534,7 @@ func (api *API) IntermediateRoots(ctx context.Context, hash common.Hash, config 
 		deleteEmptyObjects = chainConfig.IsEIP158(block.Number())
 	)
 	for i, tx := range block.Transactions() {
-		if i == 0 && chainConfig.Taiko {
+		if i == 0 && (chainConfig.Taiko || chainConfig.Mxc) {
 			if err := tx.MarkAsAnchor(); err != nil {
 				return nil, err
 			}
@@ -616,7 +616,7 @@ func (api *API) traceBlock(ctx context.Context, block *types.Block, config *Trac
 		results   = make([]*txTraceResult, len(txs))
 	)
 	for i, tx := range txs {
-		if i == 0 && api.backend.ChainConfig().Taiko {
+		if i == 0 && (api.backend.ChainConfig().Taiko || api.backend.ChainConfig().Mxc) {
 			if err := tx.MarkAsAnchor(); err != nil {
 				return nil, err
 			}
@@ -660,14 +660,8 @@ func (api *API) traceBlockParallel(ctx context.Context, block *types.Block, stat
 	}
 
 	// CHANGE(moonchain): mark the first transaction as anchor transaction.
-	if len(txs) > 0 && api.backend.ChainConfig().Mxc {
-		if err := txs[0].MarkAsAnchor(); err != nil {
-			return nil, err
-		}
-	}
-
 	// CHANGE(taiko): mark the first transaction as anchor transaction.
-	if len(txs) > 0 && api.backend.ChainConfig().Taiko {
+	if len(txs) > 0 && (api.backend.ChainConfig().Taiko || api.backend.ChainConfig().Mxc) {
 		if err := txs[0].MarkAsAnchor(); err != nil {
 			return nil, err
 		}
@@ -789,7 +783,7 @@ func (api *API) standardTraceBlockToFile(ctx context.Context, block *types.Block
 		chainConfig, canon = overrideConfig(chainConfig, config.Overrides)
 	}
 	for i, tx := range block.Transactions() {
-		if i == 0 && chainConfig.Taiko {
+		if i == 0 && (chainConfig.Taiko || chainConfig.Mxc) {
 			if err := tx.MarkAsAnchor(); err != nil {
 				return nil, err
 			}
