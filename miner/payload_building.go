@@ -265,7 +265,7 @@ func (miner *Miner) buildPayload(args *BuildPayloadArgs, witness bool) (*Payload
 			select {
 			case <-timer.C:
 				// CHANGE(moonchain): do not update payload.
-				if w.chainConfig.Mxc {
+				if miner.chainConfig.Mxc {
 					continue
 				}
 				// CHANGE(taiko): do not update payload.

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"github.com/ethereum/go-ethereum/core/tracing"
 	"math/big"
 	"strings"
 	"time"
@@ -196,13 +197,17 @@ func (t *Moonchain) Prepare(chain consensus.ChainHeaderReader, header *types.Hea
 //
 // Note: The block header and state database might be updated to reflect any
 // consensus rules that happen at finalization (e.g. block rewards).
-func (t *Moonchain) Finalize(chain consensus.ChainHeaderReader, header *types.Header, state *state.StateDB, txs []*types.Transaction, uncles []*types.Header, withdrawals []*types.Withdrawal) {
+func (t *Moonchain) Finalize(chain consensus.ChainHeaderReader, header *types.Header, state *state.StateDB, body *types.Body) {
 	// no block rewards in l2
 	header.UncleHash = types.CalcUncleHash(nil)
 	header.Difficulty = common.Big0
 	// Withdrawals processing.
-	for _, w := range withdrawals {
-		state.AddBalance(w.Address, uint256.MustFromBig(new(big.Int).SetUint64(w.Amount)))
+	for _, w := range body.Withdrawals {
+		state.AddBalance(
+			w.Address,
+			uint256.MustFromBig(new(big.Int).SetUint64(w.Amount)),
+			tracing.BalanceIncreaseWithdrawal,
+		)
 	}
 	header.Root = state.IntermediateRoot(true)
 }
@@ -212,14 +217,14 @@ func (t *Moonchain) Finalize(chain consensus.ChainHeaderReader, header *types.He
 //
 // Note: The block header and state database might be updated to reflect any
 // consensus rules that happen at finalization (e.g. block rewards).
-func (t *Moonchain) FinalizeAndAssemble(chain consensus.ChainHeaderReader, header *types.Header, state *state.StateDB, txs []*types.Transaction, uncles []*types.Header, receipts []*types.Receipt, withdrawals []*types.Withdrawal) (*types.Block, error) {
-	if withdrawals == nil {
-		withdrawals = make([]*types.Withdrawal, 0)
+func (t *Moonchain) FinalizeAndAssemble(chain consensus.ChainHeaderReader, header *types.Header, state *state.StateDB, body *types.Body, receipts []*types.Receipt) (*types.Block, error) {
+	if body.Withdrawals == nil {
+		body.Withdrawals = make([]*types.Withdrawal, 0)
 	}
 
 	// Verify anchor transaction
-	if len(txs) != 0 { // Transactions list might be empty when building empty payload.
-		isAnchor, err := t.ValidateAnchorTx(txs[0], header)
+	if len(body.Transactions) != 0 { // Transactions list might be empty when building empty payload.
+		isAnchor, err := t.ValidateAnchorTx(body.Transactions[0], header)
 		if err != nil {
 			return nil, err
 		}
@@ -229,10 +234,8 @@ func (t *Moonchain) FinalizeAndAssemble(chain consensus.ChainHeaderReader, heade
 	}
 
 	// Finalize block
-	t.Finalize(chain, header, state, txs, uncles, withdrawals)
-	return types.NewBlockWithWithdrawals(
-		header, txs, nil /* ignore uncles */, receipts, withdrawals, trie.NewStackTrie(nil),
-	), nil
+	t.Finalize(chain, header, state, body)
+	return types.NewBlock(header, body, receipts, trie.NewStackTrie(nil)), nil
 }
 
 // Seal generates a new sealing request for the given input block and pushes

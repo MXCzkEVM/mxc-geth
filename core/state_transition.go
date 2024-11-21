@@ -497,11 +497,11 @@ func (st *StateTransition) TransitionDb() (*ExecutionResult, error) {
 			)
 			feeTreasury := new(big.Int).Sub(totalFee, feeCoinbase)
 			if st.evm.ChainConfig().Mxc {
-				st.state.AddBalance(st.getMoonchainTreasuryAddress(), uint256.MustFromBig(feeTreasury))
+				st.state.AddBalance(st.getMoonchainTreasuryAddress(), uint256.MustFromBig(feeTreasury), tracing.BalanceIncreaseTreasury)
 			} else {
-				st.state.AddBalance(st.getTreasuryAddress(), uint256.MustFromBig(feeTreasury))
+				st.state.AddBalance(st.getTreasuryAddress(), uint256.MustFromBig(feeTreasury), tracing.BalanceIncreaseTreasury)
 			}
-			st.state.AddBalance(st.evm.Context.Coinbase, uint256.MustFromBig(feeCoinbase))
+			st.state.AddBalance(st.evm.Context.Coinbase, uint256.MustFromBig(feeCoinbase), tracing.BalanceIncreaseBaseFeeSharing)
 		}
 		// add the coinbase to the witness iff the fee is greater than 0
 		if rules.IsEIP4762 && fee.Sign() != 0 {

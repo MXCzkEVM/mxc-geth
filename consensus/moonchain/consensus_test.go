@@ -2,14 +2,13 @@ package moonchain_test
 
 import (
 	"bytes"
+	"github.com/ethereum/go-ethereum/consensus/moonchain"
 	"math/big"
-	"strings"
 	"testing"
 	"time"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/consensus"
-	"github.com/ethereum/go-ethereum/consensus/taiko"
 	"github.com/ethereum/go-ethereum/core"
 	"github.com/ethereum/go-ethereum/core/rawdb"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -30,7 +29,7 @@ var (
 
 	genesis    *core.Genesis
 	txs        []*types.Transaction
-	testEngine *taiko.Taiko
+	testEngine *moonchain.Moonchain
 )
 
 func init() {
@@ -38,17 +37,9 @@ func init() {
 	config.GrayGlacierBlock = nil
 	config.ArrowGlacierBlock = nil
 	config.Ethash = nil
-	config.Taiko = true
-	testEngine = taiko.New(config)
-
-	taikoL2AddressPrefix := strings.TrimPrefix(config.ChainID.String(), "0")
-
-	taikoL2Address := common.HexToAddress(
-		"0x" +
-			taikoL2AddressPrefix +
-			strings.Repeat("0", common.AddressLength*2-len(taikoL2AddressPrefix)-len(taiko.TaikoL2AddressSuffix)) +
-			taiko.TaikoL2AddressSuffix,
-	)
+	config.Mxc = true
+	testEngine = moonchain.New(config)
+	moonchainL2Address := common.HexToAddress("0x1000777700000000000000000000000000000001")
 
 	genesis = &core.Genesis{
 		Config:     config,
@@ -64,9 +55,9 @@ func init() {
 			Nonce:     0,
 			GasTipCap: common.Big0,
 			GasFeeCap: new(big.Int).SetUint64(875_000_000),
-			Data:      taiko.AnchorSelector,
-			Gas:       taiko.AnchorGasLimit,
-			To:        &taikoL2Address,
+			Data:      moonchain.AnchorSelector,
+			Gas:       moonchain.AnchorGasLimit,
+			To:        &moonchainL2Address,
 		}),
 		types.MustSignNewTx(testKey, types.LatestSigner(genesis.Config), &types.LegacyTx{
 			Nonce:    0,
@@ -122,7 +113,7 @@ func newTestBackend(t *testing.T) (*eth.Ethereum, []*types.Block) {
 		t.Fatalf("can't import test blocks: %v", err)
 	}
 
-	if _, ok := ethservice.Engine().(*taiko.Taiko); !ok {
+	if _, ok := ethservice.Engine().(*moonchain.Moonchain); !ok {
 		t.Fatalf("not use taiko engine")
 	}
 
@@ -134,7 +125,7 @@ func generateTestChain() []*types.Block {
 	generate := func(i int, g *core.BlockGen) {
 		g.OffsetTime(5)
 
-		g.SetExtra([]byte("test_taiko"))
+		g.SetExtra([]byte("test_moonchain"))
 		g.SetDifficulty(common.Big0)
 
 		for i, tx := range txs {

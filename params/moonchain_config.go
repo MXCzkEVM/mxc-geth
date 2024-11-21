@@ -17,7 +17,6 @@ var networkIDToChainConfigByMoonchain = map[*big.Int]*ChainConfig{
 	MoonchainGenevaNetworkID:   MoonchainChainConfig,
 	MainnetChainConfig.ChainID: MainnetChainConfig,
 	SepoliaChainConfig.ChainID: SepoliaChainConfig,
-	GoerliChainConfig.ChainID:  GoerliChainConfig,
 	TestChainConfig.ChainID:    TestChainConfig,
 	NonActivatedConfig.ChainID: NonActivatedConfig,
 }
